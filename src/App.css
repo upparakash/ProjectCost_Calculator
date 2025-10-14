@@ -1,0 +1,143 @@
+/* --- Container --- */
+.container {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  position: relative;
+}
+
+/* --- Heading --- */
+.heading {
+  text-align: center;
+  color: white;
+  padding: 20px 0;
+  margin-bottom: 30px;
+  background-color: #007bff;
+  width: 100%;
+}
+.title
+{
+  text-align: center;
+}
+
+/* --- Section Layout --- */
+.section {
+  margin-bottom: 40px;
+}
+
+
+.platform-list {
+  display: flex;           
+  gap: 20px;              
+  flex-wrap: wrap;      
+  justify-content: center; 
+}
+/* .users-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); 
+  gap: 20px;
+  justify-items: center;
+  margin-top: 20px;
+} */
+
+.users-list {
+  display: grid;
+  grid-template-columns: repeat(4, max-content); /* instead of 1fr */
+  gap: 30px; /* smaller gap now works */
+  justify-content: center; /* center the whole grid */
+  margin-top: 30px;
+   margin-bottom: 30px;
+  
+}
+
+
+
+.platform-card {
+  position: relative;       
+  cursor: pointer;
+  text-align: center;
+  width: 100px;             
+  height: 100px;           
+  border-radius: 50%;       
+  border: 2px solid #ddd;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  flex-direction: column;
+}
+
+.platform-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  border-color: #007bff;
+}
+
+.platform-card.selected {
+  border-color: #007bff;
+  box-shadow: 0 6px 12px rgba(0, 123, 255, 0.3);
+}
+
+/* --- Platform Images --- */
+.platform-card img {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+}
+
+/* --- Platform Tick Mark --- */
+.tick-mark {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  background-color: #28a745;
+  color: white;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+}
+
+/* --- Sidebar --- */
+.sidebar {
+  position: fixed;
+  top: 20%;
+  right: 40px;
+  height: 350px;
+  width: 250px;
+  background: #007bff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 20px;
+  color: white;
+}
+
+/* --- Buttons --- */
+.btn {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.btn:hover {
+  background: #0056b3;
+}
+
+/* --- Range Box --- */
+.range-box {
+  background: #fff;
+  border-radius: 8px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+}

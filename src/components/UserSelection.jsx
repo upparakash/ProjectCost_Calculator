@@ -1,0 +1,60 @@
+import React from "react";
+import facebook from "../assets/facebook.jpg";
+import email from "../assets/email.png";
+import gmail from "../assets/gmail.png";
+import linkedin from "../assets/linkdin.png";
+import twitter from "../assets/twitter.png";
+import instagram from "../assets/instagram.jpg";
+import google from "../assets/google.png";
+import account from "../assets/accounts.jpg";
+// Data for "Users & Accounts" options
+const users = [
+  { name: "Facebook Login", price: 12000, image: facebook },
+  { name: "Email Sign Up", price: 15000, image: email },
+  { name: "LinkedInSign Up", price: 10000, image: linkedin },
+  { name: "User Invitation Emails", price: 12000, image: gmail },
+  { name: "Twitter Sign Up", price: 15000, image: twitter },
+  { name: "Instagram Sign Up", price: 10000, image: instagram },
+  { name: "google Sign Up", price: 10000, image:google },
+  { name: "Multi-tenant Accounts", price: 10000, image:account },
+];
+
+function UserSelection({ selectedUsers, setSelectedUsers }) {
+  const toggleUser = (user) => {
+    const exists = selectedUsers.some((us) => us.name === user.name);
+
+    if (exists) {
+      // Remove from selection
+      setSelectedUsers(selectedUsers.filter((us) => us.name !== user.name));
+    } else {
+      // Add to selection
+      setSelectedUsers([...selectedUsers, user]);
+    }
+  };
+
+  return (
+    <div className="user-section">
+      <h2 className="title">4. Choose Users & Accounts</h2>
+      <div className="users-list">
+        {users.map((user) => {
+          const isSelected = selectedUsers.some((us) => us.name === user.name);
+          return (
+            <div
+              key={user.name}
+              className={`platform-card ${isSelected ? "selected" : ""}`}
+              onClick={() => toggleUser(user)}
+            >
+              <img src={user.image} alt={user.name} className="platform-image" />
+              <p style={{ margin: 0, fontWeight: "bold", color: "#333" }}>
+                {user.name}
+              </p>
+              {isSelected && <div className="tick-mark">✓</div>}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export default UserSelection;
