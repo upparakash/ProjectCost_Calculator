@@ -1,6 +1,6 @@
 import React from "react";
 import android from "../assets/Android.png";
-import ios from "../assets/iOS.png";
+import ios from "../assets/ios.png";
 import web from "../assets/Web.png";
 
 const platforms = [
