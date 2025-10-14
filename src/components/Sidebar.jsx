@@ -11,6 +11,7 @@ function Sidebar({ selectedPlatforms, selectedSizes,selectedUis,selectedUsers,se
   return (
     <div className="sidebar">
       <h3>Check your website estimation</h3>
+      <h3>Check your website estimation</h3>
 
       {/* <p><strong>Selected Platforms:</strong></p> */}
       <ul>
