@@ -1,7 +1,7 @@
 import React from "react";
 import android from "../assets/Android.png";
 import ios from "../assets/ios.png";
-import web from "../assets/Web.png";
+import web from "../assets/web.png";
 
 const platforms = [
   { name: "Android", price: 12000, image: android },
