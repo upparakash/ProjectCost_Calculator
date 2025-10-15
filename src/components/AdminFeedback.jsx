@@ -10,11 +10,11 @@ import intercom from "../assets/Intercom.png";
 
 // Data for "Admin, Feedback & Analytics"
 const Admins = [
-  { name: "Moderation Approval", price: 12000, image: Moderation },
-  { name: "Multilingual Support", price: 15000, image: Multiligual },
+  { name: "Moderation Approval", price: 10000, image: Moderation },
+  { name: "Multilingual Support", price: 10000, image: Multiligual },
   { name: "Usage Analytics", price: 10000, image: Usage },
-  { name: "User Analytics", price: 12000, image: User },
-  { name: "Crash Reporting", price: 15000, image: crash },
+  { name: "User Analytics", price: 10000, image: User },
+  { name: "Crash Reporting", price: 10000, image: crash },
   { name: "CMS Integration", price: 10000, image: CMS },
   { name: "User Admin pages", price: 10000, image: Performance },
   { name: "Intercom", price: 10000, image: intercom },

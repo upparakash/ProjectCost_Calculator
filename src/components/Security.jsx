@@ -8,8 +8,8 @@ import SSL from "../assets/SSL.png";
 
 // Data for Billing & eCommerce
 const sec = [
-  { name: " Security Not Important", price: 12000, image: Protection },
-  { name: "DoS protection", price: 15000, image: Dos },
+  { name: " Security Not Important", price: 10000, image: Protection },
+  { name: "DoS protection", price: 10000, image: Dos },
   { name: "Basic Security Measures ", price: 10000, image:BasicSecurity },
   { name: "Complete Protection", price: 10000, image: CompleteProtection },
   { name: "Two Factor Authentication", price: 10000, image: TwoFactor },

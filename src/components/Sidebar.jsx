@@ -21,8 +21,10 @@ function Sidebar({
     selectedGenerators.reduce((acc, g) => acc + g.price, 0) +
     selectedDates.reduce((acc, d) => acc + d.price, 0)+
     selectedEngagement.reduce((acc,s)=>acc+s.price,0)+
-    selectedBilling.reduce((acc,b)=>acc+b.price,0);
-
+    selectedBilling.reduce((acc,b)=>acc+b.price,0)+
+     selectedAdmins.reduce((acc,a)=>acc+a.price,0)+
+     selectedApis.reduce((acc,ap)=>acc+ap.price,0)+
+     selectedSecurity.reduce((acc,s)=>acc+s.price,0);
   return (
     <div className="sidebar">
       <h3>Check your website estimation</h3>

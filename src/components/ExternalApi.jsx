@@ -6,8 +6,8 @@ import Connection from "../assets/Connect.png";
 
 // Data for social & engagement options
 const Apis = [
-  { name: "Phone Number Masking", price: 12000, image: Sms },
-  { name: "SMS Messaging", price: 15000, image: Phone },
+  { name: "Phone Number Masking", price: 10000, image: Sms },
+  { name: "SMS Messaging", price: 10000, image: Phone },
   { name: "API integrate", price: 10000, image:  Api },
   { name: "Connect more services", price: 10000, image: Connection },
 ];
