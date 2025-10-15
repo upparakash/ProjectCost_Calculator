@@ -1,6 +1,6 @@
 import React from "react";
 import Mvp from "../assets/mvp.png";
-import Basic from "../assets/basic.jpg";
+import Basic from "../assets/basic.png";
 import Polish from "../assets/polish.png";
 
 const uiOptions = [

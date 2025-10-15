@@ -31,62 +31,62 @@ function Sidebar({
 
       <ul>
         {selectedPlatforms.map((p) => (
-          <li key={p.name}>{p.name}</li>
+          <li key={p.name}>{p.name} : {p.price}</li>
         ))}
       </ul>
 
       <ul>
         {selectedSizes.map((s) => (
-          <li key={s.name}>{s.name}</li>
+          <li key={s.name}>{s.name} : {s.price}</li>
         ))}
       </ul>
 
       <ul>
         {selectedUis.map((u) => (
-          <li key={u.name}>{u.name}</li>
+          <li key={u.name}>{u.name} : {u.price}</li>
         ))}
       </ul>
 
       <ul>
         {selectedUsers.map((us) => (
-          <li key={us.name}>{us.name}</li>
+          <li key={us.name}>{us.name} : {us.price}</li>
         ))}
       </ul>
 
       <ul>
         {selectedGenerators.map((g) => (
-          <li key={g.name}>{g.name}</li>
+          <li key={g.name}>{g.name} : {g.price}</li>
         ))}
       </ul>
 
       <ul>
         {selectedDates.map((d) => (
-          <li key={d.name}>{d.name}</li>
+          <li key={d.name}>{d.name} : {d.price}</li>
         ))}
       </ul>
       <ul>
         {selectedEngagement.map((s)=>(
-          <li key={s.name}>{s.name}</li>
+          <li key={s.name}>{s.name} : {s.price}</li>
         ))}
       </ul>
       <ul>
         {selectedBilling.map((b)=>(
-          <li key={b.name}>{b.name}</li>)
+          <li key={b.name}>{b.name} : {b.price}</li>)
         )}
       </ul>
       <ul>
         {selectedAdmins.map((a)=>(
-          <li key={a.name}>{a.name}</li>)
+          <li key={a.name}>{a.name} : {a.price}</li>)
         )}
       </ul>
       <ul>
         {selectedApis.map((ap)=>(
-          <li key={ap.name}>{ap.name}</li>
+          <li key={ap.name}>{ap.name} : {ap.price}</li>
         ))}
       </ul>
       <ul>
         {selectedSecurity.map((s)=>(
-          <li key={s.name}>{s.name}</li>
+          <li key={s.name}>{s.name} : {s.price}</li>
         ))}
       </ul>
 

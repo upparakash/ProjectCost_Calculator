@@ -4,9 +4,9 @@ import email from "../assets/email.png";
 import gmail from "../assets/gmail.png";
 import linkedin from "../assets/linkdin.png";
 import twitter from "../assets/twitter.png";
-import instagram from "../assets/instagram.jpg";
+import instagram from "../assets/instagram.png";
 import google from "../assets/google.png";
-import account from "../assets/accounts.jpg";
+// import account from "../assets/accounts.jpg";
 // Data for "Users & Accounts" options
 const users = [
   { name: "Facebook Login", price: 7000, image: facebook },
@@ -16,7 +16,7 @@ const users = [
   { name: "Twitter Sign Up", price: 7000, image: twitter },
   { name: "Instagram Sign Up", price: 7000, image: instagram },
   { name: "google Sign Up", price: 7000, image:google },
-  { name: "Multi-tenant Accounts", price: 7000, image:account },
+  // { name: "Multi-tenant Accounts", price: 7000, image:account },
 ];
 
 function UserSelection({ selectedUsers, setSelectedUsers }) {

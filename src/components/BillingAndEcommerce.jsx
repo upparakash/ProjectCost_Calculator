@@ -2,7 +2,7 @@ import React from "react";
 import Subscription from "../assets/Subscription.png";
 import Market from "../assets/Marketplace.png";
 import Product from "../assets/Product.png";
-import Shopping from "../assets/Shopping Cart.jpg";
+import Shopping from "../assets/ShoppingCart.png";
 import Payment from "../assets/Payment.png";
 
 // Data for Billing & eCommerce
