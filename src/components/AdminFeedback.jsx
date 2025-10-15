@@ -1,5 +1,5 @@
 import React from "react";
-import Moderation from "../assets/Moderation.png";
+import Moderation from "../assets/moderation.png";
 import Multiligual from "../assets/Multilingual.png";
 import Usage from "../assets/Usage Analytics.png";
 import User from "../assets/User Analytics.png";
