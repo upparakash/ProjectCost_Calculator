@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import small from "../assets/s.png";
 import Large from "../assets/l.png";
 import Medium from "../assets/m.png";
@@ -12,12 +13,9 @@ const sizes = [
 function SizeSelection({ selectedSizes, setSelectedSizes }) {
   const toggleSize = (size) => {
     const isSelected = selectedSizes.some((s) => s.name === size.name);
-
     if (isSelected) {
-      // Unselect if the same one is clicked again
       setSelectedSizes([]);
     } else {
-      // Replace with the new single selection
       setSelectedSizes([size]);
     }
   };
@@ -26,24 +24,25 @@ function SizeSelection({ selectedSizes, setSelectedSizes }) {
     <div className="platform-section">
       <h2 className="sub">2. Choose Size</h2>
       <div className="platform-list">
-        {sizes.map((size) => {
+        {sizes.map((size, index) => {
           const isSelected = selectedSizes.some((s) => s.name === size.name);
           return (
-            <div
+            <motion.div
               key={size.name}
               className={`platform-card ${isSelected ? "selected" : ""}`}
               onClick={() => toggleSize(size)}
+              initial={{ opacity: 0, scale: 0.8, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.2 }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <img
-                src={size.image}
-                alt={size.name}
-                style={{ width: "60px", height: "60px", marginBottom: "5px" }}
-              />
+              <img src={size.image} alt={size.name} />
               <p style={{ margin: 0, fontWeight: "bold", color: "#333" }}>
                 {size.name}
               </p>
               {isSelected && <div className="tick-mark">✓</div>}
-            </div>
+            </motion.div>
           );
         })}
       </div>
