@@ -35,11 +35,11 @@ function AdminFeedback({ selectedAdmins, setSelectedAdmins, selectedPlatforms })
   };
 
   return (
-    <div className="user-section">
+    <div className="platform-section">
       <h2 className="sub">9. Admin, Feedback & Analytics</h2>
 
       <div
-        className="users-list"
+        className="platform-list"
         style={{
           pointerEvents: isDisabled ? "none" : "auto", // disable interaction if no platform
           opacity: isDisabled ? 1 : 1,              // visual feedback

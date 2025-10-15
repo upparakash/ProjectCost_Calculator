@@ -53,11 +53,14 @@
   display: grid;
   grid-template-columns: repeat(3, max-content); /* instead of 1fr */
   gap: 100px;
-  margin-left: 15rem;
+  margin-left: 30rem;
   margin-bottom: 30px;
   width:90%;
     
-  
+}
+.platform-section
+{
+  width:70%;
 }
 /* .users-list {
   display: grid;
@@ -69,10 +72,10 @@
 
 .users-list {
   display: grid;
-  grid-template-columns: repeat(4, max-content); 
+  grid-template-columns: repeat(3, max-content); 
   gap: 30px; 
   justify-content: start; 
-   margin-left: 15rem;
+   margin-right: 100rem;
   margin-top: 30px;
   margin-bottom: 30px;
   width:90%;
@@ -199,3 +202,76 @@
   border: 1px solid #ddd;
   text-align: center;
 }
+
+/* --- Global fix --- */
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* --- Container --- */
+.container {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  position: relative;
+  align-items: center;
+  max-width: 1200px;        /* ✅ restricts max width */
+  margin: 0 auto;           /* ✅ centers content horizontally */
+}
+
+/* --- Title & Subtitle --- */
+.title{
+  text-align: center;
+  margin-top: 120px;
+  margin-right: 0;          /* ✅ remove right offset */
+}
+.sub{
+   text-align: center;
+  margin-top: 10px;
+  margin-right: 0; 
+}
+
+/* --- Screen section --- */
+.screen {
+  width: 100%;              /* ✅ fits screen */
+  max-width: 1200px;
+  height: 100px;
+  margin: 0 auto;
+}
+
+/* --- Platform list --- */
+.platform-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* ✅ responsive grid */
+  gap: 60px;
+  justify-items: center;    /* ✅ centers each item */
+  margin: 30px auto;
+  width: 100%;
+  max-width: 1000px;
+}
+
+
+/* --- Sidebar --- */
+.sidebar {
+  position: fixed;
+  top: 20%;
+  right: 40px;
+  background: #4770DB;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 20px;
+  color: white;
+  box-sizing: border-box;
+  width: 300px;              /* ✅ fixed width that fits screen */
+  max-width: 90vw;           /* ✅ never exceeds screen */
+}
+
+
+/* --- Ensure full-page height layout --- */
+html, body {
+  height: 100%;              /* ✅ ensures the body fills the screen */
+}
+

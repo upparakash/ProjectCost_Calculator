@@ -32,9 +32,9 @@ function UsersAndGenerated({ selectedGenerators, setSelectedGenerators }) {
   };
 
   return (
-    <div className="user-section">
+    <div className="platform-section">
       <h2 className="sub">5. User Generated Content</h2>
-      <div className="users-list">
+      <div className="platform-list">
         {Generators.map((gen) => {
           const isSelected = selectedGenerators.some((g) => g.name === gen.name);
           return (

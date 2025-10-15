@@ -33,9 +33,9 @@ function UserSelection({ selectedUsers, setSelectedUsers }) {
   };
 
   return (
-    <div className="user-section">
+    <div className="platform-section">
       <h2 className="sub">4. Choose Users & Accounts</h2>
-      <div className="users-list">
+      <div className="platform-list">
         {users.map((user) => {
           const isSelected = selectedUsers.some((us) => us.name === user.name);
           return (

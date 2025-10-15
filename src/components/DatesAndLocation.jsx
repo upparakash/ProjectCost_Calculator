@@ -27,8 +27,7 @@ function DatesAndLocation({ selectedDates, setSelectedDates, selectedPlatforms }
   return (
     <div className="platform-section">
       <h2 className="sub">6. Dates & Locations</h2>
-      <div className="platform-list"
-      >
+      <div className="platform-list">
         
         {Dates.map((date) => {
           const isSelected = selectedDates.some((d) => d.name === date.name);
