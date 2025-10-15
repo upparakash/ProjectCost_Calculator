@@ -9,7 +9,9 @@ function Sidebar({
   selectedDates = [],
   selectedEngagement=[],
  selectedBilling=[],
- selectedAdmins=[]
+ selectedAdmins=[],
+ selectedApis=[],
+ selectedSecurity=[],
 }) {
   const total =
     selectedPlatforms.reduce((acc, p) => acc + p.price, 0) +
@@ -74,6 +76,16 @@ function Sidebar({
         {selectedAdmins.map((a)=>(
           <li key={a.name}>{a.name}</li>)
         )}
+      </ul>
+      <ul>
+        {selectedApis.map((ap)=>(
+          <li key={ap.name}>{ap.name}</li>
+        ))}
+      </ul>
+      <ul>
+        {selectedSecurity.map((s)=>(
+          <li key={s.name}>{s.name}</li>
+        ))}
       </ul>
 
       <h4>Total Cost: ₹{total}</h4>

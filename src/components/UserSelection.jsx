@@ -9,14 +9,14 @@ import google from "../assets/google.png";
 import account from "../assets/accounts.jpg";
 // Data for "Users & Accounts" options
 const users = [
-  { name: "Facebook Login", price: 12000, image: facebook },
-  { name: "Email Sign Up", price: 15000, image: email },
-  { name: "LinkedInSign Up", price: 10000, image: linkedin },
-  { name: "User Invitation Emails", price: 12000, image: gmail },
-  { name: "Twitter Sign Up", price: 15000, image: twitter },
-  { name: "Instagram Sign Up", price: 10000, image: instagram },
-  { name: "google Sign Up", price: 10000, image:google },
-  { name: "Multi-tenant Accounts", price: 10000, image:account },
+  { name: "Facebook Login", price: 7000, image: facebook },
+  { name: "Email Sign Up", price: 7000, image: email },
+  { name: "LinkedInSign Up", price: 7000, image: linkedin },
+  { name: "User Invitation Emails", price: 7000, image: gmail },
+  { name: "Twitter Sign Up", price: 7000, image: twitter },
+  { name: "Instagram Sign Up", price: 7000, image: instagram },
+  { name: "google Sign Up", price: 7000, image:google },
+  { name: "Multi-tenant Accounts", price: 7000, image:account },
 ];
 
 function UserSelection({ selectedUsers, setSelectedUsers }) {
@@ -34,7 +34,7 @@ function UserSelection({ selectedUsers, setSelectedUsers }) {
 
   return (
     <div className="user-section">
-      <h2 className="title">4. Choose Users & Accounts</h2>
+      <h2 className="sub">4. Choose Users & Accounts</h2>
       <div className="users-list">
         {users.map((user) => {
           const isSelected = selectedUsers.some((us) => us.name === user.name);

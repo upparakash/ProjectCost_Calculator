@@ -7,22 +7,26 @@ import crash from "../assets/Crash.png";
 import CMS from "../assets/CMS.jpg";
 import Performance from "../assets/Performance.png";
 import intercom from "../assets/intercom.png";
-// Data for "Users & Accounts"
+
+// Data for "Admin, Feedback & Analytics"
 const Admins = [
-  { name: "search", price: 12000, image:Moderation },
-  { name: "Tags", price: 15000, image:Multiligual},
+  { name: "search", price: 12000, image: Moderation },
+  { name: "Tags", price: 15000, image: Multiligual },
   { name: "Transaction", price: 10000, image: Usage },
   { name: "blog", price: 12000, image: User },
-  { name: "ratings", price: 15000, image: crash},
-  { name: "File", price: 10000, image:CMS },
-  { name: "User", price: 10000, image:Performance },
-  { name: "Audio", price: 10000, image:intercom},
-// { name: "Dashbord", price: 10000, image: Dashbord },
+  { name: "Crash", price: 15000, image: crash },
+  { name: "File", price: 10000, image: CMS },
+  { name: "User", price: 10000, image: Performance },
+  { name: "Audio", price: 10000, image: intercom },
 ];
 
-function AdminFeedback({ selectedAdmins, setSelectedAdmins}) {
+function AdminFeedback({ selectedAdmins, setSelectedAdmins, selectedPlatforms }) {
+  const isDisabled = !selectedPlatforms || selectedPlatforms.length === 0;
+
   const toggleAdmin = (admin) => {
-    const exists =selectedAdmins.some((a) => a.name === admin.name);
+    if (isDisabled) return; // prevent selection if no platform
+
+    const exists = selectedAdmins.some((a) => a.name === admin.name);
     if (exists) {
       setSelectedAdmins(selectedAdmins.filter((a) => a.name !== admin.name));
     } else {
@@ -32,8 +36,16 @@ function AdminFeedback({ selectedAdmins, setSelectedAdmins}) {
 
   return (
     <div className="user-section">
-      <h2 className="title">9. Admin, Feedback & Analytics</h2>
-      <div className="users-list">
+      <h2 className="sub">9. Admin, Feedback & Analytics</h2>
+
+      <div
+        className="users-list"
+        style={{
+          pointerEvents: isDisabled ? "none" : "auto", // disable interaction if no platform
+          opacity: isDisabled ? 1 : 1,              // visual feedback
+          filter: isDisabled ? "grayscale(70%)" : "none",
+        }}
+      >
         {Admins.map((admin) => {
           const isSelected = selectedAdmins.some((a) => a.name === admin.name);
           return (
@@ -41,11 +53,10 @@ function AdminFeedback({ selectedAdmins, setSelectedAdmins}) {
               key={admin.name}
               className={`platform-card ${isSelected ? "selected" : ""}`}
               onClick={() => toggleAdmin(admin)}
+              style={{ cursor: isDisabled ? "default" : "pointer" }}
             >
               <img src={admin.image} alt={admin.name} className="platform-image" />
-              <p style={{ margin: 0, fontWeight: "bold", color: "#333" }}>
-                {admin.name}
-              </p>
+              <p style={{ margin: 0, fontWeight: "bold", color: "#333" }}>{admin.name}</p>
               {isSelected && <div className="tick-mark">✓</div>}
             </div>
           );

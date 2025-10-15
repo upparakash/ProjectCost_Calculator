@@ -4,9 +4,10 @@ import ios from "../assets/ios.png";
 import web from "../assets/web.png";
 
 const platforms = [
-  { name: "Android", price: 12000, image: android },
-  { name: "iOS", price: 15000, image: ios },
-  { name: "Web", price: 10000, image: web },
+  { name: "Android", price: 25000, image: android },
+  { name: "iOS", price: 25000, image: ios },
+  { name: "Web", price: 25000, image: web },
+  
 ];
 
 function PlatformSelection({ selectedPlatforms, setSelectedPlatforms }) {

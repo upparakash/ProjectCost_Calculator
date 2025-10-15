@@ -3,20 +3,44 @@
   font-family: Arial, sans-serif;
   padding: 20px;
   position: relative;
+  align-items: center;
 }
 
 /* --- Heading --- */
 .heading {
   text-align: center;
   color: white;
-  padding: 20px 0;
+  /* padding: 20px 0; */
   margin-bottom: 30px;
-  background-color: #007bff;
+  background-color: #4770DB;
   width: 100%;
+  position:fixed;
+  margin-top: 0px;
+  padding-bottom: 30px;
+  padding-top: 50px;
+  top: 0;              /* ✅ ensures it sticks to the very top */
+  left: 0;             /* ✅ ensures no horizontal offset */
+  margin: 0; 
+  z-index: 1000;  
 }
 .title
 {
   text-align: center;
+  margin-top: 120px;
+  margin-right: 15rem;
+  /* margin-left: 30%;
+  margin-right: 50%; */
+}
+.sub
+{
+  text-align: center;
+  margin-top: 10px;
+   margin-right: 15rem;
+}
+.screen
+{
+  width:1500px;
+  height: 100px;
 }
 
 /* --- Section Layout --- */
@@ -26,10 +50,14 @@
 
 
 .platform-list {
-  display: flex;           
-  gap: 20px;              
-  flex-wrap: wrap;      
-  justify-content: center; 
+  display: grid;
+  grid-template-columns: repeat(3, max-content); /* instead of 1fr */
+  gap: 100px;
+  margin-left: 15rem;
+  margin-bottom: 30px;
+  width:90%;
+    
+  
 }
 /* .users-list {
   display: grid;
@@ -41,11 +69,14 @@
 
 .users-list {
   display: grid;
-  grid-template-columns: repeat(4, max-content); /* instead of 1fr */
-  gap: 30px; /* smaller gap now works */
-  justify-content: center; /* center the whole grid */
+  grid-template-columns: repeat(4, max-content); 
+  gap: 30px; 
+  justify-content: start; 
+   margin-left: 15rem;
   margin-top: 30px;
-   margin-bottom: 30px;
+  margin-bottom: 30px;
+  width:90%;
+   
   
 }
 
@@ -55,12 +86,14 @@
   position: relative;       
   cursor: pointer;
   text-align: center;
-  width: 100px;             
-  height: 100px;           
+  width: 150px;             
+  height: 150px;           
   border-radius: 50%;       
   border: 2px solid #ddd;
   background-color: #fff;
   display: flex;
+  margin-left: 5px;
+   margin-right: 20px;
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
@@ -71,11 +104,11 @@
 .platform-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-  border-color: #007bff;
+  border-color: #4770DB;
 }
 
 .platform-card.selected {
-  border-color: #007bff;
+  border-color:#4770DB;
   box-shadow: 0 6px 12px rgba(0, 123, 255, 0.3);
 }
 
@@ -89,9 +122,9 @@
 /* --- Platform Tick Mark --- */
 .tick-mark {
   position: absolute;
-  top: 1px;
-  right: 1px;
-  background-color: #28a745;
+  top: 5px;
+  right: 7px;
+  background-color:#fbce17;
   color: white;
   border-radius: 50%;
   width: 22px;
@@ -109,18 +142,43 @@
   position: fixed;
   top: 20%;
   right: 40px;
-  height: 350px;
-  width: 250px;
-  background: #007bff;
+  height: 70vh;              /* limits height to 70% of viewport */
+  width: 20%;
+  background:#4770DB;
   border: 1px solid #ddd;
   border-radius: 12px;
   padding: 20px;
   color: white;
+  overflow-y: auto;          /* enables vertical scrolling */
+  box-sizing: border-box;    /* ensures padding is inside the box */
+  scrollbar-width: thin;     /* for Firefox */
 }
+
+/* Optional: Custom scrollbar for Webkit (Chrome, Edge, Safari) */
+.sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 4px;
+}
+
+.sidebar ul {
+  list-style-type: disc;
+  padding-left: 0;
+  margin-bottom: 10px;
+}
+
 
 /* --- Buttons --- */
 .btn {
-  background: #007bff;
+  background: #4770DB;
   color: #fff;
   border: none;
   padding: 8px 15px;
@@ -130,7 +188,7 @@
 }
 
 .btn:hover {
-  background: #0056b3;
+  background: #4770DB;
 }
 
 /* --- Range Box --- */

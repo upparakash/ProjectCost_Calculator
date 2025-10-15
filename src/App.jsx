@@ -11,6 +11,8 @@ import DatesAndLocation from "./components/DatesAndLocation";
 import  SocialAndEngagement from "./components/SocialAndEngagement";
 import BillingAndEcommerce from "./components/BillingAndEcommerce";
 import AdminFeedback from "./components/AdminFeedback";
+import ExternalApis from "./components/ExternalApi";
+import Security from "./components/Security";
 function App() {
   const [selectedPlatforms, setSelectedPlatforms] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState([]);
@@ -21,15 +23,18 @@ function App() {
   const [selectedEngagement,setSelectedEngagement]=useState([]);
   const [selectedBilling,setSelectedBilling]=useState([]);
   const [selectedAdmins,setSelectedAdmins]=useState([]);
+  const [selectedApis,setSelectedApis]=useState([]);
+  const [selectedSecurity,setSelectedSecurity]=useState([])
   return (
     <div className="container">
       <h1 className="heading">HOW MUCH TO MAKE AN APP OR WEB?</h1>
-
+      <div className="screen">
       {/* Platform Selection */}
       <PlatformSelection
         selectedPlatforms={selectedPlatforms}
         setSelectedPlatforms={setSelectedPlatforms}
       />
+      
 
       {/* Size Selection */}
       <SizeSelection
@@ -57,18 +62,33 @@ function App() {
       <DatesAndLocation
       selectedDates={selectedDates}
       setSelectedDates={setSelectedDates}
+      selectedPlatforms={selectedPlatforms}
       />
       <SocialAndEngagement
       selectedEngagement={selectedEngagement}
-      setSelectedEngagement={setSelectedEngagement}/>
+      setSelectedEngagement={setSelectedEngagement}
+      selectedPlatforms={selectedPlatforms}/>
       <BillingAndEcommerce
       selectedBilling={selectedBilling}
       setSelectedBilling={setSelectedBilling}
+      selectedPlatforms={selectedPlatforms}
       />
       < AdminFeedback
       selectedAdmins={selectedAdmins}
       setSelectedAdmins={setSelectedAdmins}
+      selectedPlatforms={selectedPlatforms}
       />
+      <ExternalApis
+      selectedApis={selectedApis}
+      setSelectedApis={setSelectedApis}
+      selectedPlatforms={selectedPlatforms}
+      />
+      <Security
+      selectedSecurity={selectedSecurity}
+      setSelectedSecurity={setSelectedSecurity}
+       selectedPlatforms={selectedPlatforms}/>
+      </div>
+     
         {/* Sidebar */}
       <Sidebar
         selectedPlatforms={selectedPlatforms}
@@ -80,6 +100,8 @@ function App() {
         selectedEngagement={selectedEngagement}
         selectedBilling={selectedBilling}
         selectedAdmins={selectedAdmins}
+        selectedApis={selectedApis}
+         selectedSecurity={selectedSecurity}
       />
     </div>
   );
