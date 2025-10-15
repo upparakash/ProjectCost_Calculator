@@ -1,6 +1,6 @@
 import React from "react";
 import Subscription from "../assets/Subscription.png";
-import Market from "../assets/MarketPlace.png";
+import Market from "../assets/Marketplace.png";
 import Product from "../assets/Product.png";
 import Shopping from "../assets/Shopping Cart.jpg";
 import Payment from "../assets/Payment.png";

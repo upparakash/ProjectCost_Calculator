@@ -6,18 +6,18 @@ import User from "../assets/User Analytics.png";
 import crash from "../assets/Crash.png";
 import CMS from "../assets/CMS.jpg";
 import Performance from "../assets/Performance.png";
-import intercom from "../assets/intercom.png";
+import intercom from "../assets/Intercom.png";
 
 // Data for "Admin, Feedback & Analytics"
 const Admins = [
-  { name: "search", price: 12000, image: Moderation },
-  { name: "Tags", price: 15000, image: Multiligual },
-  { name: "Transaction", price: 10000, image: Usage },
-  { name: "blog", price: 12000, image: User },
-  { name: "Crash", price: 15000, image: crash },
-  { name: "File", price: 10000, image: CMS },
-  { name: "User", price: 10000, image: Performance },
-  { name: "Audio", price: 10000, image: intercom },
+  { name: "Moderation Approval", price: 12000, image: Moderation },
+  { name: "Multilingual Support", price: 15000, image: Multiligual },
+  { name: "Usage Analytics", price: 10000, image: Usage },
+  { name: "User Analytics", price: 12000, image: User },
+  { name: "Crash Reporting", price: 15000, image: crash },
+  { name: "CMS Integration", price: 10000, image: CMS },
+  { name: "User Admin pages", price: 10000, image: Performance },
+  { name: "Intercom", price: 10000, image: intercom },
 ];
 
 function AdminFeedback({ selectedAdmins, setSelectedAdmins, selectedPlatforms }) {
