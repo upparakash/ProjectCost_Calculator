@@ -8,21 +8,36 @@
 
 /* --- Heading --- */
 .heading {
-  text-align: center;
-  color: white;
-  /* padding: 20px 0; */
-  margin-bottom: 30px;
-  background-color: #4770DB;
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  position:fixed;
-  margin-top: 0px;
-  padding-bottom: 30px;
-  padding-top: 50px;
-  top: 0;              /* ✅ ensures it sticks to the very top */
-  left: 0;             /* ✅ ensures no horizontal offset */
-  margin: 0; 
-  z-index: 1000;  
+  text-align: center;
+  font-size: 2rem;
+  color: #fff;
+  background-color: #4770DB;
+  padding: 50px 20px 30px;
+  margin: 0;
+  z-index: 1000;
+  overflow: hidden;
+
+  /* Mask Reveal effect */
+  display: inline-block;
+  white-space: nowrap;
+  clip-path: inset(0 100% 0 0); /* hides all text initially */
+  animation: revealText 3s forwards;
 }
+
+/* Keyframes for reveal */
+@keyframes revealText {
+  from {
+    clip-path: inset(0 100% 0 0); /* fully hidden */
+  }
+  to {
+    clip-path: inset(0 0 0 0); /* fully revealed */
+  }
+}
+
 .title
 {
   text-align: center;
@@ -268,8 +283,186 @@ html, body {
   width: 300px;              /* ✅ fixed width that fits screen */
   max-width: 90vw;           /* ✅ never exceeds screen */
 }
+/* components/RequirementsTable.css */
+/* components/RequirementsTable.css */
+/* components/RequirementsTable.css */
+.requirements-table-container {
+  width: 70%;                 /* table width */
+  overflow-x: auto;
+  margin: 30px 0 30px 20px;   /* top right bottom left => push table to left */
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  float: left;                /* makes it stick to the left */
+}
 
 
+.requirements-title {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.requirements-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px; /* Add gap below the table */
+}
+
+.requirements-table th {
+  background-color: #2c3e50;
+  color: white;
+  padding: 15px 20px;
+  text-align: left;
+  font-weight: 600;
+  border: 1px solid #34495e;
+  font-size: 1rem;
+}
+
+.requirements-table td {
+  padding: 15px 20px;
+  border: 1px solid #ddd;
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.requirement-header {
+  width: 35%;
+  min-width: 200px;
+}
+
+.specifications-header {
+  width: 65%;
+  min-width: 300px;
+}
+
+.requirement-cell {
+  font-weight: 600;
+  background-color: #f8f9fa;
+  color: #2c3e50;
+}
+
+.specifications-cell {
+  background-color: #fff;
+  color: #555;
+}
+
+.no-selection {
+  color: #999;
+  font-style: italic;
+}
+
+.requirement-row:hover {
+  background-color: #f8f9fa;
+}
+
+.requirement-row:hover .requirement-cell {
+  background-color: #e9ecef;
+}
+
+.requirement-row:hover .specifications-cell {
+  background-color: #f8f9fa;
+}
+
+/* Estimation section styles */
+.estimation-section {
+  margin-top: 40px; /* Large gap between table and estimation */
+  padding-top: 30px;
+  border-top: 2px solid #e9ecef;
+  text-align: center;
+}
+
+.estimation-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 15px;
+}
+
+.total-cost {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #e74c3c;
+  margin-top: 10px;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .requirements-table-container {
+    width: 70%;
+  }
+}
+
+@media (max-width: 768px) {
+  .requirements-table-container {
+    width: 70%;
+    padding: 10px;
+    margin: 20px auto;
+  }
+  
+  .requirements-table {
+    font-size: 14px;
+    margin-bottom: 25px;
+  }
+  
+  .requirements-table th,
+  .requirements-table td {
+    padding: 10px 12px;
+  }
+  
+  .requirement-header {
+    width: 40%;
+  }
+  
+  .specifications-header {
+    width: 60%;
+  }
+  
+  .estimation-section {
+    margin-top: 30px;
+    padding-top: 20px;
+  }
+  
+  .total-cost {
+    font-size: 1.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .requirements-table-container {
+    width: 50%;
+    margin-left:0px;
+    margin-right:30px;;
+  }
+  
+  .requirements-title {
+    font-size: 1.3rem;
+  }
+  
+  .requirements-table th,
+  .requirements-table td {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+  
+  .estimation-section {
+    margin-top: 25px;
+    padding-top: 15px;
+  }
+  
+  .estimation-title {
+    font-size: 1.1rem;
+  }
+  
+  .total-cost {
+    font-size: 1.5rem;
+  }
+}
 /* --- Ensure full-page height layout --- */
 html, body {
   height: 100%;              /* ✅ ensures the body fills the screen */

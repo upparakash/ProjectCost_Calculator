@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import Moderation from "../assets/moderation.png";
 import Multiligual from "../assets/Multilingual.png";
 import Usage from "../assets/Usage Analytics.png";
@@ -46,19 +47,25 @@ function AdminFeedback({ selectedAdmins, setSelectedAdmins, selectedPlatforms })
           filter: isDisabled ? "grayscale(70%)" : "none",
         }}
       >
-        {Admins.map((admin) => {
+        {Admins.map((admin,index) => {
           const isSelected = selectedAdmins.some((a) => a.name === admin.name);
-          return (
-            <div
+         return (
+            <motion.div
               key={admin.name}
               className={`platform-card ${isSelected ? "selected" : ""}`}
               onClick={() => toggleAdmin(admin)}
-              style={{ cursor: isDisabled ? "default" : "pointer" }}
+              initial={{ opacity: 0, scale: 0.8, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.2 }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <img src={admin.image} alt={admin.name} className="platform-image" />
-              <p style={{ margin: 0, fontWeight: "bold", color: "#333" }}>{admin.name}</p>
+              <img src={admin.image} alt={admin.name} />
+              <p style={{ margin: 0, fontWeight: "bold", color: "#333" }}>
+                {admin.name}
+              </p>
               {isSelected && <div className="tick-mark">✓</div>}
-            </div>
+            </motion.div>
           );
         })}
       </div>

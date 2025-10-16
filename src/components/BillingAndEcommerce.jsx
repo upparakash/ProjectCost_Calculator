@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import Subscription from "../assets/Subscription.png";
 import Market from "../assets/Marketplace.png";
 import Product from "../assets/Product.png";
@@ -32,25 +33,27 @@ function BillingAndEcommerce({ selectedBilling, setSelectedBilling, selectedPlat
     <div className="platform-section">
       <h2 className="sub">8. Billing & eCommerce</h2>
       <div className="platform-list">
-        {Billings.map((bill) => {
+        {Billings.map((bill,index) => {
           const isSelected = selectedBilling.some((b) => b.name === bill.name);
 
           return (
-            <div
-              key={bill.name}
-              className={`platform-card ${isSelected ? "selected" : ""} ${isDisabled ? "disabled" : ""}`}
-              onClick={() => toggleBilling(bill)}
-              style={{
-                 pointerEvents: isDisabled ? "none" : "auto",
-                cursor: isDisabled ? "default" : "pointer",
-                opacity: isDisabled ? 1 : 1,
-              }}
-            >
-              <img src={bill.image} alt={bill.name} />
-              <p style={{ margin: 0, fontWeight: "bold", color: "#333" }}>{bill.name}</p>
-              {isSelected && <div className="tick-mark">✓</div>}
-            </div>
-          );
+                              <motion.div
+                                key={bill.name}
+                                className={`platform-card ${isSelected ? "selected" : ""}`}
+                                onClick={() => toggleBilling(bill)}
+                                initial={{ opacity: 0, scale: 0.8, y: 30 }} //before animation
+                                animate={{ opacity: 1, scale: 1, y: 0 }}    //after animattion
+                                transition={{ duration: 0.5, delay: index * 0.2 }}
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.95 }}
+                              >
+                                <img src={bill.image} alt={bill.name} />
+                                <p style={{ margin: 0, fontWeight: "bold", color: "#333" }}>
+                                  {bill.name}
+                                </p>
+                                {isSelected && <div className="tick-mark">✓</div>}
+                              </motion.div>
+                            );
         })}
       </div>
     </div>

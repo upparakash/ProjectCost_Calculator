@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import calender from "../assets/calender.png";
 import Booking from "../assets/Booking.png";
 import CustomMap from "../assets/custom map.png";
@@ -29,22 +30,28 @@ function DatesAndLocation({ selectedDates, setSelectedDates, selectedPlatforms }
       <h2 className="sub">6. Dates & Locations</h2>
       <div className="platform-list">
         
-        {Dates.map((date) => {
+        {Dates.map((date,index) => {
           const isSelected = selectedDates.some((d) => d.name === date.name);
           const isDisabled = !selectedPlatforms || selectedPlatforms.length === 0;
 
-          return (
-            <div
-              key={date.name}
-              className={`platform-card ${isSelected ? "selected" : ""} ${isDisabled ? "disabled" : ""}`}
-              onClick={() => toggleDate(date)}
-              style={{  pointerEvents: isDisabled ? "none" : "auto",cursor: isDisabled ? "default" : "pointer", opacity: isDisabled ? 1 : 1 }}
-            >
-              <img src={date.image} alt={date.name} />
-              <p style={{ margin: 0, fontWeight: "bold", color: "#333" }}>{date.name}</p>
-              {isSelected && <div className="tick-mark">✓</div>}
-            </div>
-          );
+         return (
+                      <motion.div
+                        key={date.name}
+                        className={`platform-card ${isSelected ? "selected" : ""}`}
+                        onClick={() => toggleDate(date)}
+                        initial={{ opacity: 0, scale: 0.8, y: 30 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: index * 0.2 }}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <img src={date.image} alt={date.name} />
+                        <p style={{ margin: 0, fontWeight: "bold", color: "#333" }}>
+                          {date.name}
+                        </p>
+                        {isSelected && <div className="tick-mark">✓</div>}
+                      </motion.div>
+                    );
         })}
       </div>
     </div>

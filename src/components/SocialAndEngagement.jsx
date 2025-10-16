@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import social from "../assets/Social.jpg";
 import message from "../assets/message.png";
 import forums from "../assets/formus.png";
@@ -37,21 +38,27 @@ function SocialAndEngagement({ selectedEngagement, setSelectedEngagement, select
           filter: isDisabled ? "grayscale(70%)" : "none",
         }}
       >
-        {Engagements.map((engagement) => {
+        {Engagements.map((engagement,index) => {
           const isSelected = selectedEngagement.some((e) => e.name === engagement.name);
 
           return (
-            <div
-              key={engagement.name}
-              className={`platform-card ${isSelected ? "selected" : ""}`}
-              onClick={() => toggleEngagement(engagement)}
-              style={{ cursor: isDisabled ? "default" : "pointer" }}
-            >
-              <img src={engagement.image} alt={engagement.name} />
-              <p style={{ margin: 0, fontWeight: "bold", color: "#333" }}>{engagement.name}</p>
-              {isSelected && <div className="tick-mark">✓</div>}
-            </div>
-          );
+                      <motion.div
+                        key={engagement.name}
+                        className={`platform-card ${isSelected ? "selected" : ""}`}
+                        onClick={() => toggleEngagement(engagement)}
+                        initial={{ opacity: 0, scale: 0.8, y: 30 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: index * 0.2 }}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <img src={engagement.image} alt={engagement.name} />
+                        <p style={{ margin: 0, fontWeight: "bold", color: "#333" }}>
+                          {engagement.name}
+                        </p>
+                        {isSelected && <div className="tick-mark">✓</div>}
+                      </motion.div>
+                    );
         })}
       </div>
     </div>

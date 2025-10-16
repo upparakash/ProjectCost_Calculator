@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import Protection from "../assets/Protection.png";
 import Dos from "../assets/Dos.png";
 import CompleteProtection from "../assets/CompleteProtection.png"
@@ -34,25 +35,27 @@ function Security({ selectedSecurity, setSelectedSecurity, selectedPlatforms }) 
     <div className="platform-section">
       <h2 className="sub">11. Security</h2>
       <div className="platform-list">
-        {sec.map((secu) => {
+        {sec.map((secu,index) => {
           const isSelected = selectedSecurity.some((s) => s.name === secu.name);
 
-          return (
-            <div
-              key={secu.name}
-              className={`platform-card ${isSelected ? "selected" : ""} ${isDisabled ? "disabled" : ""}`}
-              onClick={() => toggleSecurity(secu)}
-              style={{
-                pointerEvents: isDisabled ? "none" : "auto",
-                cursor: isDisabled ? "default" : "pointer",
-                opacity: isDisabled ? 1 : 1,
-              }}
-            >
-              <img src={secu.image} alt={secu.name} />
-              <p style={{ margin: 0, fontWeight: "bold", color: "#333" }}>{secu.name}</p>
-              {isSelected && <div className="tick-mark">✓</div>}
-            </div>
-          );
+         return (
+                     <motion.div
+                       key={secu.name}
+                       className={`platform-card ${isSelected ? "selected" : ""}`}
+                       onClick={() => toggleSecurity(secu)}
+                       initial={{ opacity: 0, scale: 0.8, y: 30 }} //before animation
+                       animate={{ opacity: 1, scale: 1, y: 0 }}    //after animattion
+                       transition={{ duration: 0.5, delay: index * 0.2 }}
+                       whileHover={{ scale: 1.1 }}
+                       whileTap={{ scale: 0.95 }}
+                     >
+                       <img src={secu.image} alt={secu.name} />
+                       <p style={{ margin: 0, fontWeight: "bold", color: "#333" }}>
+                         {secu.name}
+                       </p>
+                       {isSelected && <div className="tick-mark">✓</div>}
+                     </motion.div>
+                   );
         })}
       </div>
     </div>

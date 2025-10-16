@@ -1,6 +1,7 @@
 import React from "react";
+import { motion } from "framer-motion";
 import Sms from "../assets/SMS.jpg";
-import Phone from  "../assets/Phone.png";
+import Phone from "../assets/Phone.png";
 import Api from "../assets/API.png";
 import Connection from "../assets/Connect.png";
 
@@ -8,21 +9,21 @@ import Connection from "../assets/Connect.png";
 const Apis = [
   { name: "SMS Messaging", price: 10000, image: Sms },
   { name: "Phone Number Masking", price: 10000, image: Phone },
-  { name: "API integrate", price: 10000, image:  Api },
-  { name: "Connect more services", price: 10000, image: Connection },
+  { name: "API Integration", price: 10000, image: Api },
+  { name: "Connect More Services", price: 10000, image: Connection },
 ];
 
 function ExternalApis({ selectedApis, setSelectedApis, selectedPlatforms }) {
   const isDisabled = !selectedPlatforms || selectedPlatforms.length === 0;
 
-  const toggleApis = (Api) => {
-    if (isDisabled) return; // prevent selection if no platform
+  const toggleApis = (api) => {
+    if (isDisabled) return;
 
-    const exists = selectedApis.some((ap) => ap.name === Api.name);
+    const exists = selectedApis.some((a) => a.name === api.name);
     if (exists) {
-     setSelectedApis(selectedApis.filter((ap) => ap.name !== Api.name));
+      setSelectedApis(selectedApis.filter((a) => a.name !== api.name));
     } else {
-     setSelectedApis([...selectedApis, Api]);
+      setSelectedApis([...selectedApis, api]);
     }
   };
 
@@ -32,25 +33,31 @@ function ExternalApis({ selectedApis, setSelectedApis, selectedPlatforms }) {
       <div
         className="platform-list"
         style={{
-          pointerEvents: isDisabled ? "none" : "auto", // disable interaction
-          opacity: isDisabled ? 1 : 1,              // visual feedback
+          pointerEvents: isDisabled ? "none" : "auto",
+          opacity: isDisabled ? 1 : 1,
           filter: isDisabled ? "grayscale(70%)" : "none",
         }}
       >
-        { Apis.map((Apis) => {
-          const isSelected =selectedApis.some((Api) => Api.name === Apis.name);
+        {Apis.map((api, index) => {
+          const isSelected = selectedApis.some((a) => a.name === api.name);
 
           return (
-            <div
-              key={Apis.name}
+            <motion.div
+              key={api.name}
               className={`platform-card ${isSelected ? "selected" : ""}`}
-              onClick={() => toggleApis(Apis)}
-              style={{ cursor: isDisabled ? "default" : "pointer" }}
+              onClick={() => toggleApis(api)}
+              initial={{ opacity: 0, scale: 0.8, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.2 }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <img src={Apis.image} alt={Apis.name} />
-              <p style={{ margin: 0, fontWeight: "bold", color: "#333" }}>{Apis.name}</p>
+              <img src={api.image} alt={api.name} />
+              <p style={{ margin: 0, fontWeight: "bold", color: "#333" }}>
+                {api.name}
+              </p>
               {isSelected && <div className="tick-mark">✓</div>}
-            </div>
+            </motion.div>
           );
         })}
       </div>

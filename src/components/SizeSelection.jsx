@@ -31,8 +31,8 @@ function SizeSelection({ selectedSizes, setSelectedSizes }) {
               key={size.name}
               className={`platform-card ${isSelected ? "selected" : ""}`}
               onClick={() => toggleSize(size)}
-              initial={{ opacity: 0, scale: 0.8, y: 30 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
+              initial={{ opacity: 0, scale: 0.8, y: 30 }} //before animation
+              animate={{ opacity: 1, scale: 1, y: 0 }}    //after animattion
               transition={{ duration: 0.5, delay: index * 0.2 }}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}

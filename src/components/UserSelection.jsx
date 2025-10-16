@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import facebook from "../assets/facebook.jpg";
 import email from "../assets/email.png";
 import gmail from "../assets/gmail.png";
@@ -36,21 +37,26 @@ function UserSelection({ selectedUsers, setSelectedUsers }) {
     <div className="platform-section">
       <h2 className="sub">4. Choose Users & Accounts</h2>
       <div className="platform-list">
-        {users.map((user) => {
+        {users.map((user,index) => {
           const isSelected = selectedUsers.some((us) => us.name === user.name);
-          return (
-            <div
-              key={user.name}
-              className={`platform-card ${isSelected ? "selected" : ""}`}
-              onClick={() => toggleUser(user)}
-            >
-              <img src={user.image} alt={user.name} className="platform-image" />
-              <p style={{ margin: 0, fontWeight: "bold", color: "#333" }}>
-                {user.name}
-              </p>
-              {isSelected && <div className="tick-mark">✓</div>}
-            </div>
-          );
+            return (
+                      <motion.div
+                        key={user.name}
+                        className={`platform-card ${isSelected ? "selected" : ""}`}
+                        onClick={() => toggleUser(user)}
+                        initial={{ opacity: 0, scale: 0.8, y: 30 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: index * 0.2 }}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <img src={user.image} alt={user.name} />
+                        <p style={{ margin: 0, fontWeight: "bold", color: "#333" }}>
+                          {user.name}
+                        </p>
+                        {isSelected && <div className="tick-mark">✓</div>}
+                      </motion.div>
+                    );
         })}
       </div>
     </div>

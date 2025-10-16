@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import search from "../assets/search.png";
 import Tags from "../assets/Tags.png";
 import Transaction from "../assets/Transactional Emails.png";
@@ -35,21 +36,26 @@ function UsersAndGenerated({ selectedGenerators, setSelectedGenerators }) {
     <div className="platform-section">
       <h2 className="sub">5. User Generated Content</h2>
       <div className="platform-list">
-        {Generators.map((gen) => {
+        {Generators.map((gen,index) => {
           const isSelected = selectedGenerators.some((g) => g.name === gen.name);
-          return (
-            <div
-              key={gen.name}
-              className={`platform-card ${isSelected ? "selected" : ""}`}
-              onClick={() => toggleGenerator(gen)}
-            >
-              <img src={gen.image} alt={gen.name} className="platform-image" />
-              <p style={{ margin: 0, fontWeight: "bold", color: "#333" }}>
-                {gen.name}
-              </p>
-              {isSelected && <div className="tick-mark">✓</div>}
-            </div>
-          );
+           return (
+                      <motion.div
+                        key={gen.name}
+                        className={`platform-card ${isSelected ? "selected" : ""}`}
+                        onClick={() => toggleGenerator(gen)}
+                        initial={{ opacity: 0, scale: 0.8, y: 30 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: index * 0.2 }}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <img src={gen.image} alt={gen.name} />
+                        <p style={{ margin: 0, fontWeight: "bold", color: "#333" }}>
+                          {gen.name}
+                        </p>
+                        {isSelected && <div className="tick-mark">✓</div>}
+                      </motion.div>
+                    );
         })}
       </div>
     </div>
