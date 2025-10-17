@@ -89,14 +89,11 @@ const RequirementsTable = ({
         pdf.setFont("helvetica", "bold");
         pdf.text("ASPIRE TEKHUB SOLUTIONS", 100, 40);
         
-        // Add tagline
-        // pdf.setFontSize(12);
-        // pdf.setFont("helvetica", "normal");
-        // pdf.text("Let's Build Together", 100, 60);
-        
-        // Add date on right side
+        // Add date on right side with smaller font
         const currentDate = new Date().toLocaleDateString();
-        pdf.text(`Date: ${currentDate}`, pageWidth - 100, 40);
+        pdf.setFontSize(10); // Reduced font size for date
+        pdf.setFont("helvetica", "normal");
+        pdf.text(`Date: ${currentDate}`, pageWidth - 150, 45);
         
         // Add title
         pdf.setFontSize(16);
@@ -121,8 +118,9 @@ const RequirementsTable = ({
         pdf.setFont("helvetica", "normal");
         pdf.text("Let's Build Together", pageWidth / 2, 50, { align: "center" });
         
-        // Date
+        // Date with smaller font
         const currentDate = new Date().toLocaleDateString();
+        pdf.setFontSize(10); // Reduced font size for date
         pdf.text(`Date: ${currentDate}`, pageWidth - 100, 30);
         
         // Title
