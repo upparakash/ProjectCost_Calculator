@@ -112,7 +112,7 @@
   text-align: center;
   width: 150px;             
   height: 150px;           
-  border-radius: 50%;       
+  border-radius: 20px;       
   border: 2px solid #ddd;
   background-color: #fff;
   display: flex;
@@ -146,8 +146,8 @@
 /* --- Platform Tick Mark --- */
 .tick-mark {
   position: absolute;
-  top: 5px;
-  right: 7px;
+  top: 1px;
+  right: 1px;
   background-color:#fbce17;
   color: white;
   border-radius: 50%;
