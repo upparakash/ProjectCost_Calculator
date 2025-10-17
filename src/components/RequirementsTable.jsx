@@ -90,9 +90,9 @@ const RequirementsTable = ({
         pdf.text("ASPIRE TEKHUB SOLUTIONS", 100, 40);
         
         // Add tagline
-        pdf.setFontSize(12);
-        pdf.setFont("helvetica", "normal");
-        pdf.text("Let's Build Together", 100, 60);
+        // pdf.setFontSize(12);
+        // pdf.setFont("helvetica", "normal");
+        // pdf.text("Let's Build Together", 100, 60);
         
         // Add date on right side
         const currentDate = new Date().toLocaleDateString();
