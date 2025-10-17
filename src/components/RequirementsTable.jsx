@@ -51,8 +51,8 @@ const RequirementsTable = ({
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF("p", "pt", "a4");
       
-      // Add clean header without logo attempt
-      addHeaderToPDF(pdf);
+      // Add custom header with logo
+      await addCustomHeader(pdf);
       
       // Add the table image
       const imgProps = pdf.getImageProperties(imgData);
@@ -60,10 +60,10 @@ const RequirementsTable = ({
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
       
       // Position the table below the header
-      pdf.addImage(imgData, "PNG", 40, 100, pdfWidth, pdfHeight);
+      pdf.addImage(imgData, "PNG", 40, 120, pdfWidth, pdfHeight);
       
-      // Add footer
-      addFooterToPDF(pdf);
+      // Add styled footer - dynamically positioned
+      addStyledFooter(pdf, 120 + pdfHeight); // Pass table end position
       
       pdf.save("requirements-summary.pdf");
     } catch (error) {
@@ -71,33 +71,98 @@ const RequirementsTable = ({
     }
   };
 
-  const addHeaderToPDF = (pdf) => {
-    // Clean header without logo - just company name and details
-    pdf.setFontSize(18);
-    pdf.setFont("helvetica", "bold");
-    pdf.text("ASPIRE TEKHUB SOLUTIONS", 40, 40);
-    
-    // Add phone number
-    pdf.setFontSize(10);
-    pdf.setFont("helvetica", "normal");
-    pdf.text("040 4519 5642", 40, 60);
+  const addCustomHeader = (pdf) => {
+    return new Promise((resolve) => {
+      const logoUrl = "/AspireLogo.png"; // Your logo file
+      const logoImg = new Image();
+      logoImg.crossOrigin = "Anonymous";
+      logoImg.src = logoUrl;
 
-    // Add date on right side
-    const currentDate = new Date().toLocaleDateString();
-    pdf.text(`Date: ${currentDate}`, pdf.internal.pageSize.getWidth() - 120, 40);
-    
-    // Add title
-    pdf.setFontSize(14);
-    pdf.setFont("helvetica", "bold");
-    pdf.text("REQUIREMENTS SUMMARY", 40, 85);
+      logoImg.onload = () => {
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        
+        // Add logo on left side
+        pdf.addImage(logoImg, "PNG", 40, 20, 50, 50);
+        
+        // Add company name next to logo
+        pdf.setFontSize(20);
+        pdf.setFont("helvetica", "bold");
+        pdf.text("ASPIRE TEKHUB SOLUTIONS", 100, 40);
+        
+        // Add tagline
+        pdf.setFontSize(12);
+        pdf.setFont("helvetica", "normal");
+        pdf.text("Let's Build Together", 100, 60);
+        
+        // Add date on right side
+        const currentDate = new Date().toLocaleDateString();
+        pdf.text(`Date: ${currentDate}`, pageWidth - 100, 40);
+        
+        // Add title
+        pdf.setFontSize(16);
+        pdf.setFont("helvetica", "bold");
+        pdf.text("REQUIREMENTS SUMMARY", 40, 90);
+        
+        resolve();
+      };
+
+      logoImg.onerror = () => {
+        // Fallback without logo
+        console.log("Logo not found, using text-only header");
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        
+        // Company name
+        pdf.setFontSize(20);
+        pdf.setFont("helvetica", "bold");
+        pdf.text("ASPIRE TEKHUB SOLUTIONS", pageWidth / 2, 30, { align: "center" });
+        
+        // Tagline
+        pdf.setFontSize(12);
+        pdf.setFont("helvetica", "normal");
+        pdf.text("Let's Build Together", pageWidth / 2, 50, { align: "center" });
+        
+        // Date
+        const currentDate = new Date().toLocaleDateString();
+        pdf.text(`Date: ${currentDate}`, pageWidth - 100, 30);
+        
+        // Title
+        pdf.setFontSize(16);
+        pdf.setFont("helvetica", "bold");
+        pdf.text("REQUIREMENTS SUMMARY", 40, 80);
+        
+        resolve();
+      };
+    });
   };
 
-  const addFooterToPDF = (pdf) => {
+  const addStyledFooter = (pdf, tableEndPosition) => {
+    const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
-    pdf.setFontSize(9);
-    pdf.setFont("helvetica", "normal");
-    pdf.text("Corporate Office : 1-8-303, 4th Floor, VK Towers, SP Road, RasoolPura, Secunderabad - 500003", 40, pageHeight - 340);
-    pdf.text("040 4519 5642 | info@aspireths.com | www.aspireths.com", 40, pageHeight - 320);
+    
+    // Calculate footer position - closer to table
+    const footerTop = Math.min(tableEndPosition + 40, pageHeight - 60); // Reduced space
+    const footerHeight = 60;
+    
+    // Blue background for footer
+    pdf.setFillColor(59, 130, 246); // Blue color
+    pdf.rect(0, footerTop, pageWidth, footerHeight, 'F'); // Blue rectangle
+    
+    // White text for footer
+    pdf.setTextColor(255, 255, 255); // White color
+    
+    // Office address - larger font
+    pdf.setFontSize(12);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("Corporate Office: 1-8-303, 3rd Floor, VK Towers, SP Road, RasoolPura, Secunderabad - 500003", 
+             pageWidth / 2, footerTop + 25, { align: "center" });
+    
+    // Contact info - larger font
+    pdf.setFontSize(12);
+    pdf.text("040 45195642 | info@aspireths.com | www.aspireths.com", 
+             pageWidth / 2, footerTop + 45, { align: "center" });
+    
+    // Reset text color to black for any future text
+    pdf.setTextColor(0, 0, 0);
   };
 
   return (
@@ -121,7 +186,7 @@ const RequirementsTable = ({
                 }
               </td>
               <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                {getTotalPrice(req.items)}
+                ${getTotalPrice(req.items)}
               </td>
             </tr>
           ))}
@@ -129,7 +194,7 @@ const RequirementsTable = ({
           {/* Grand Total Row */}
           <tr style={{ fontWeight: "bold", background: "#e9ecef" }}>
             <td style={{ padding: "12px", border: "1px solid #ddd" }} colSpan="2">Grand Total</td>
-            <td style={{ padding: "12px", border: "1px solid #ddd" }}>{grandTotal}</td>
+            <td style={{ padding: "12px", border: "1px solid #ddd" }}>${grandTotal}</td>
           </tr>
         </tbody>
       </table>
