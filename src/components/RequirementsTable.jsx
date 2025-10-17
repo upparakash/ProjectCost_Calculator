@@ -23,12 +23,21 @@ const RequirementsTable = ({
     return array.reduce((acc, item) => acc + item.price, 0);
   };
 
+  // ✅ Check if Web is selected
+  const isWebSelected = selectedPlatforms.some(p => p.name === "Web");
+
+  // ✅ User Generators: display names but price 0 if Web selected
+  const generatorsToDisplay = selectedGenerators.map(gen => {
+    if (isWebSelected) return { ...gen, price: 0 };
+    return gen;
+  });
+
   const requirements = [
     { id: 1, name: "Platform", items: selectedPlatforms },
     { id: 2, name: "Size", items: selectedSizes },
     { id: 3, name: "User Interface", items: selectedUis },
     { id: 4, name: "Social Login", items: selectedUsers },
-    { id: 5, name: "User Content", items: selectedGenerators },
+    { id: 5, name: "User Content", items: generatorsToDisplay },
     { id: 6, name: "Locations", items: selectedDates },
     { id: 7, name: "Engagement", items: selectedEngagement },
     { id: 8, name: "Billing", items: selectedBilling },
@@ -37,7 +46,6 @@ const RequirementsTable = ({
     { id: 11, name: "Security", items: selectedSecurity }
   ];
 
-  // Calculate grand total
   const grandTotal = requirements.reduce((acc, req) => acc + getTotalPrice(req.items), 0);
 
   const handleDownloadPDF = () => {
@@ -66,7 +74,7 @@ const RequirementsTable = ({
         </thead>
         <tbody>
           {requirements.map(req => (
-            <tr key={req.id}>
+            <tr key={req.id} style={req.id === 5 && isWebSelected ? { background: "#f9f9f9" } : {}}>
               <td style={{ padding: "10px", border: "1px solid #ccc" }}>{req.name}</td>
               <td style={{ padding: "10px", border: "1px solid #ccc" }}>
                 {req.items && req.items.length > 0
@@ -80,7 +88,6 @@ const RequirementsTable = ({
             </tr>
           ))}
 
-          {/* ✅ Grand Total Row */}
           <tr style={{ fontWeight: "bold", background: "#f0f0f0" }}>
             <td style={{ padding: "10px", border: "1px solid #ccc" }}>Total</td>
             <td style={{ padding: "10px", border: "1px solid #ccc" }}></td>
@@ -89,7 +96,6 @@ const RequirementsTable = ({
         </tbody>
       </table>
 
-      {/* Button below table */}
       <div style={{ textAlign: "center", marginTop: "20px" }}>
         <button 
           onClick={handleDownloadPDF} 
