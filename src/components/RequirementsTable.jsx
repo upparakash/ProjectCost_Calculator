@@ -37,129 +37,115 @@ const RequirementsTable = ({
     { id: 11, name: "Security", items: selectedSecurity }
   ];
 
-  // Calculate grand total
   const grandTotal = requirements.reduce((acc, req) => acc + getTotalPrice(req.items), 0);
 
   const handleDownloadPDF = async () => {
     try {
       const input = tableRef.current;
-      const canvas = await html2canvas(input, { 
-        scale: 2,
-        useCORS: true
-      });
-      
+      const canvas = await html2canvas(input, { scale: 3, useCORS: true });
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF("p", "pt", "a4");
-      
-      // Add custom header with logo
-      await addCustomHeader(pdf);
-      
-      // Add the table image
+
+      // Add styled header
+      await addStyledHeader(pdf);
+
+      // Add centered "REQUIREMENTS SUMMARY" title below header
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(16);
+      pdf.text("REQUIREMENTS SUMMARY", pageWidth / 2, 110, { align: "center" });
+
+      // Scale up the image in the PDF (bigger table only in PDF)
       const imgProps = pdf.getImageProperties(imgData);
-      const pdfWidth = pdf.internal.pageSize.getWidth() - 80;
+      const pdfWidth = pdf.internal.pageSize.getWidth() - 60;
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-      
-      // Position the table below the header
-      pdf.addImage(imgData, "PNG", 40, 120, pdfWidth, pdfHeight);
-      
-      // Add styled footer - dynamically positioned
-      addStyledFooter(pdf, 120 + pdfHeight); // Pass table end position
-      
+
+      // Position table below the "REQUIREMENTS SUMMARY" title
+      pdf.addImage(imgData, "PNG", 30, 130, pdfWidth, pdfHeight);
+
+      // Add styled footer closer to the table
+      addStyledFooter(pdf, 130 + pdfHeight);
+
       pdf.save("requirements-summary.pdf");
     } catch (error) {
       console.error("Error generating PDF:", error);
     }
   };
 
-  const addCustomHeader = (pdf) => {
+  const addStyledHeader = (pdf) => {
     return new Promise((resolve) => {
-      const logoUrl = "/AspireLogo.png"; // Your logo file
+      const logoUrl = "/AspireLogo.png";
       const logoImg = new Image();
       logoImg.crossOrigin = "Anonymous";
       logoImg.src = logoUrl;
 
       logoImg.onload = () => {
         const pageWidth = pdf.internal.pageSize.getWidth();
-        
-        // Add logo on left side
-        pdf.addImage(logoImg, "PNG", 40, 20, 50, 50);
-        
-        // Add company name next to logo
-        pdf.setFontSize(20);
-        pdf.setFont("helvetica", "bold");
-        pdf.text("ASPIRE TEKHUB SOLUTIONS", 100, 40);
-        
-        // Add date on right side with smaller font
-        const currentDate = new Date().toLocaleDateString();
-        pdf.setFontSize(10); // Reduced font size for date
-        pdf.setFont("helvetica", "normal");
-        pdf.text(`Date: ${currentDate}`, pageWidth - 150, 45);
-        
-        // Add title
+
+        // Blue background header
+        pdf.setFillColor(59, 130, 246);
+        pdf.rect(0, 0, pageWidth, 70, "F");
+
+        // White text color
+        pdf.setTextColor(255, 255, 255);
+        pdf.addImage(logoImg, "PNG", 40, 10, 40, 40);
+
+        // Company name
         pdf.setFontSize(16);
         pdf.setFont("helvetica", "bold");
-        pdf.text("REQUIREMENTS SUMMARY", 40, 90);
-        
+        pdf.text("ASPIRE TEKHUB SOLUTIONS", 90, 35);
+
+        // Date (right side)
+        const currentDate = new Date().toLocaleDateString();
+        pdf.setFontSize(10);
+        pdf.text(`Date: ${currentDate}`, pageWidth - 120, 35);
+
+        // Reset text color
+        pdf.setTextColor(0, 0, 0);
         resolve();
       };
 
       logoImg.onerror = () => {
-        // Fallback without logo
-        console.log("Logo not found, using text-only header");
         const pageWidth = pdf.internal.pageSize.getWidth();
-        
-        // Company name
-        pdf.setFontSize(20);
-        pdf.setFont("helvetica", "bold");
-        pdf.text("ASPIRE TEKHUB SOLUTIONS", pageWidth / 2, 30, { align: "center" });
-        
-        // Tagline
-        pdf.setFontSize(12);
-        pdf.setFont("helvetica", "normal");
-        pdf.text("Let's Build Together", pageWidth / 2, 50, { align: "center" });
-        
-        // Date with smaller font
-        const currentDate = new Date().toLocaleDateString();
-        pdf.setFontSize(10); // Reduced font size for date
-        pdf.text(`Date: ${currentDate}`, pageWidth - 100, 30);
-        
-        // Title
+        pdf.setFillColor(59, 130, 246);
+        pdf.rect(0, 0, pageWidth, 70, "F");
+        pdf.setTextColor(255, 255, 255);
         pdf.setFontSize(16);
         pdf.setFont("helvetica", "bold");
-        pdf.text("REQUIREMENTS SUMMARY", 40, 80);
-        
+        pdf.text("ASPIRE TEKHUB SOLUTIONS", 40, 35);
+        pdf.setFontSize(10);
+        pdf.text(`Date: ${new Date().toLocaleDateString()}`, pageWidth - 120, 35);
+        pdf.setTextColor("black");
         resolve();
       };
     });
   };
 
-  const addStyledFooter = (pdf, tableEndPosition) => {
+  const addStyledFooter = (pdf, tableBottomY) => {
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
-    
-    // Calculate footer position - closer to table
-    const footerTop = Math.min(tableEndPosition + 40, pageHeight - 60); // Reduced space
-    const footerHeight = 60;
-    
-    // Blue background for footer
-    pdf.setFillColor(59, 130, 246); // Blue color
-    pdf.rect(0, footerTop, pageWidth, footerHeight, 'F'); // Blue rectangle
-    
-    // White text for footer
-    pdf.setTextColor(255, 255, 255); // White color
-    
-    // Office address - larger font
-    pdf.setFontSize(12);
+
+    // Position footer close to table, but not cut off if table is long
+    const footerY = Math.min(pageHeight - 70, tableBottomY + 20);
+
+    pdf.setFillColor(59, 130, 246);
+    pdf.rect(0, footerY, pageWidth, 60, "F");
+
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(10);
     pdf.setFont("helvetica", "bold");
-    pdf.text("Corporate Office: 1-8-303, 3rd Floor, VK Towers, SP Road, RasoolPura, Secunderabad - 500003", 
-             pageWidth / 2, footerTop + 25, { align: "center" });
-    
-    // Contact info - larger font
-    pdf.setFontSize(12);
-    pdf.text("040 45195642 | info@aspireths.com | www.aspireths.com", 
-             pageWidth / 2, footerTop + 45, { align: "center" });
-    
-    // Reset text color to black for any future text
+    pdf.text(
+      "Corporate Office: 1-8-303, 3rd Floor, VK Towers, SP Road, RasoolPura, Secunderabad - 500003",
+      pageWidth / 2,
+      footerY + 25,
+      { align: "center" }
+    );
+    pdf.text(
+      "040 4519 5642 | info@aspireths.com | www.aspireths.com",
+      pageWidth / 2,
+      footerY + 42,
+      { align: "center" }
+    );
     pdf.setTextColor(0, 0, 0);
   };
 
@@ -180,16 +166,13 @@ const RequirementsTable = ({
               <td style={{ padding: "10px", border: "1px solid #ddd" }}>
                 {req.items && req.items.length > 0
                   ? req.items.map(item => item.name).join(", ")
-                  : <span style={{ color: "#999", fontStyle: "italic" }}>None selected</span>
-                }
+                  : <span style={{ color: "#999", fontStyle: "italic" }}>None selected</span>}
               </td>
               <td style={{ padding: "10px", border: "1px solid #ddd" }}>
                 {getTotalPrice(req.items)}
               </td>
             </tr>
           ))}
-
-          {/* Grand Total Row */}
           <tr style={{ fontWeight: "bold", background: "#e9ecef" }}>
             <td style={{ padding: "12px", border: "1px solid #ddd" }} colSpan="2">Grand Total</td>
             <td style={{ padding: "12px", border: "1px solid #ddd" }}>{grandTotal}</td>
@@ -197,16 +180,15 @@ const RequirementsTable = ({
         </tbody>
       </table>
 
-      {/* Button below table */}
       <div style={{ textAlign: "center", marginTop: "20px" }}>
-        <button 
-          onClick={handleDownloadPDF} 
-          style={{ 
-            padding: "10px 20px", 
-            background: "#4770DB", 
-            color: "#fff", 
-            border: "none", 
-            borderRadius: "6px", 
+        <button
+          onClick={handleDownloadPDF}
+          style={{
+            padding: "10px 20px",
+            background: "#4770DB",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
             cursor: "pointer",
             fontSize: "16px",
             fontWeight: "bold"

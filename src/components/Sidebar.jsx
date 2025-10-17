@@ -13,13 +13,7 @@ function Sidebar({
  selectedApis=[],
  selectedSecurity=[],
 }) {
-  const isWebSelected = selectedPlatforms.some((p) => p.name === "Web");
-
-  // ✅ If Web is selected, we skip generator cost
-  const generatorTotal = isWebSelected
-    ? 0
-    : selectedGenerators.reduce((acc, g) => acc + g.price, 0);
-
+  
   const total =
     selectedPlatforms.reduce((acc, p) => acc + p.price, 0) +
     selectedSizes.reduce((acc, s) => acc + s.price, 0) +
