@@ -186,7 +186,7 @@ const RequirementsTable = ({
                 }
               </td>
               <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                ${getTotalPrice(req.items)}
+                {getTotalPrice(req.items)}
               </td>
             </tr>
           ))}
@@ -194,7 +194,7 @@ const RequirementsTable = ({
           {/* Grand Total Row */}
           <tr style={{ fontWeight: "bold", background: "#e9ecef" }}>
             <td style={{ padding: "12px", border: "1px solid #ddd" }} colSpan="2">Grand Total</td>
-            <td style={{ padding: "12px", border: "1px solid #ddd" }}>${grandTotal}</td>
+            <td style={{ padding: "12px", border: "1px solid #ddd" }}>{grandTotal}</td>
           </tr>
         </tbody>
       </table>
