@@ -40,30 +40,27 @@ const RequirementsTable = ({
   const grandTotal = requirements.reduce((acc, req) => acc + getTotalPrice(req.items), 0);
 
   const handleDownloadPDF = async () => {
+    if (grandTotal === 0) return; // Safety check
+
     try {
       const input = tableRef.current;
       const canvas = await html2canvas(input, { scale: 3, useCORS: true });
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF("p", "pt", "a4");
 
-      // Add styled header
       await addStyledHeader(pdf);
 
-      // Add centered "REQUIREMENTS SUMMARY" title below header
       const pageWidth = pdf.internal.pageSize.getWidth();
       pdf.setFont("helvetica", "bold");
       pdf.setFontSize(16);
       pdf.text("REQUIREMENTS SUMMARY", pageWidth / 2, 110, { align: "center" });
 
-      // Scale up the image in the PDF (bigger table only in PDF)
       const imgProps = pdf.getImageProperties(imgData);
       const pdfWidth = pdf.internal.pageSize.getWidth() - 60;
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-      // Position table below the "REQUIREMENTS SUMMARY" title
       pdf.addImage(imgData, "PNG", 30, 130, pdfWidth, pdfHeight);
 
-      // Add styled footer closer to the table
       addStyledFooter(pdf, 130 + pdfHeight);
 
       pdf.save("requirements-summary.pdf");
@@ -81,26 +78,20 @@ const RequirementsTable = ({
 
       logoImg.onload = () => {
         const pageWidth = pdf.internal.pageSize.getWidth();
-
-        // Blue background header
         pdf.setFillColor(59, 130, 246);
         pdf.rect(0, 0, pageWidth, 70, "F");
 
-        // White text color
         pdf.setTextColor(255, 255, 255);
         pdf.addImage(logoImg, "PNG", 40, 10, 40, 40);
 
-        // Company name
         pdf.setFontSize(16);
         pdf.setFont("helvetica", "bold");
         pdf.text("ASPIRE TEKHUB SOLUTIONS", 90, 35);
 
-        // Date (right side)
         const currentDate = new Date().toLocaleDateString();
         pdf.setFontSize(10);
         pdf.text(`Date: ${currentDate}`, pageWidth - 120, 35);
 
-        // Reset text color
         pdf.setTextColor(0, 0, 0);
         resolve();
       };
@@ -109,12 +100,16 @@ const RequirementsTable = ({
         const pageWidth = pdf.internal.pageSize.getWidth();
         pdf.setFillColor(59, 130, 246);
         pdf.rect(0, 0, pageWidth, 70, "F");
+
         pdf.setTextColor(255, 255, 255);
         pdf.setFontSize(16);
         pdf.setFont("helvetica", "bold");
         pdf.text("ASPIRE TEKHUB SOLUTIONS", 40, 35);
+
+        const currentDate = new Date().toLocaleDateString();
         pdf.setFontSize(10);
-        pdf.text(`Date: ${new Date().toLocaleDateString()}`, pageWidth - 120, 35);
+        pdf.text(`Date: ${currentDate}`, pageWidth - 120, 35);
+
         pdf.setTextColor("black");
         resolve();
       };
@@ -125,7 +120,6 @@ const RequirementsTable = ({
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
 
-    // Position footer close to table, but not cut off if table is long
     const footerY = Math.min(pageHeight - 70, tableBottomY + 20);
 
     pdf.setFillColor(59, 130, 246);
@@ -179,24 +173,30 @@ const RequirementsTable = ({
           </tr>
         </tbody>
       </table>
+<div style={{ textAlign: "center", marginTop: "20px" }}>
+  <button
+    onClick={() => {
+      if (grandTotal === 0) {
+        alert("Please select your requirements before downloading the PDF.");
+        return;
+      }
+      handleDownloadPDF();
+    }}
+    style={{
+      padding: "10px 20px",
+      background: grandTotal === 0 ? "#ccc" : "#4770DB",
+      color: "#fff",
+      border: "none",
+      borderRadius: "6px",
+      cursor: grandTotal === 0 ? "not-allowed" : "pointer",
+      fontSize: "16px",
+      fontWeight: "bold"
+    }}
+  >
+    Download PDF
+  </button>
+</div>
 
-      <div style={{ textAlign: "center", marginTop: "20px" }}>
-        <button
-          onClick={handleDownloadPDF}
-          style={{
-            padding: "10px 20px",
-            background: "#4770DB",
-            color: "#fff",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer",
-            fontSize: "16px",
-            fontWeight: "bold"
-          }}
-        >
-          Download PDF
-        </button>
-      </div>
     </div>
   );
 };
