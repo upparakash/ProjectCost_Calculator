@@ -1,4 +1,7 @@
 /* --- Container --- */
+body {
+  margin-bottom: 0px;
+}
 .container {
   font-family: Arial, sans-serif;
   padding: 20px;

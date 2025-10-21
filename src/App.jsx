@@ -52,7 +52,9 @@ function App() {
         <UserSelection
           selectedUsers={selectedUsers}
           setSelectedUsers={setSelectedUsers}
-        />
+
+
+/>
 
         <UsersAndGenerated
           selectedGenerators={selectedGenerators}

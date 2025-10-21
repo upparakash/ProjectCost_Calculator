@@ -61,7 +61,7 @@ const RequirementsTable = ({
 
       pdf.addImage(imgData, "PNG", 30, 130, pdfWidth, pdfHeight);
 
-      addStyledFooter(pdf, 130 + pdfHeight);
+      addStyledFooter(pdf, 100 + pdfHeight);
 
       pdf.save("requirements-summary.pdf");
     } catch (error) {
@@ -70,57 +70,66 @@ const RequirementsTable = ({
   };
 
   const addStyledHeader = (pdf) => {
-    return new Promise((resolve) => {
-      const logoUrl = "/AspireLogo.png";
-      const logoImg = new Image();
-      logoImg.crossOrigin = "Anonymous";
-      logoImg.src = logoUrl;
+  return new Promise((resolve) => {
+    const logoUrl = "/AspireLogo.png";
+    const logoImg = new Image();
+    logoImg.crossOrigin = "Anonymous";
+    logoImg.src = logoUrl;
 
-      logoImg.onload = () => {
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        pdf.setFillColor(59, 130, 246);
-        pdf.rect(0, 0, pageWidth, 70, "F");
+    logoImg.onload = () => {
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      pdf.setFillColor(59, 130, 246);
+      pdf.rect(0, 0, pageWidth, 70, "F");
 
-        pdf.setTextColor(255, 255, 255);
-        pdf.addImage(logoImg, "PNG", 40, 10, 40, 40);
+      pdf.setTextColor(255, 255, 255);
+      pdf.addImage(logoImg, "PNG", 40, 10, 40, 40);
 
-        pdf.setFontSize(16);
-        pdf.setFont("helvetica", "bold");
-        pdf.text("ASPIRE TEKHUB SOLUTIONS", 90, 35);
+      pdf.setFontSize(16);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("ASPIRE TEKHUB SOLUTIONS", 90, 35);
 
-        const currentDate = new Date().toLocaleDateString();
-        pdf.setFontSize(10);
-        pdf.text(`Date: ${currentDate}`, pageWidth - 120, 35);
+      const currentDate = new Date().toLocaleDateString();
+      const currentTime = new Date().toLocaleTimeString();
 
-        pdf.setTextColor(0, 0, 0);
-        resolve();
-      };
+      pdf.setFontSize(10);
+      // ✅ Line by line
+      pdf.text(`Date: ${currentDate}`, pageWidth - 120, 25);
+      pdf.text(`Time: ${currentTime}`, pageWidth - 120, 40);
 
-      logoImg.onerror = () => {
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        pdf.setFillColor(59, 130, 246);
-        pdf.rect(0, 0, pageWidth, 70, "F");
+      pdf.setTextColor(0, 0, 0);
+      resolve();
+    };
 
-        pdf.setTextColor(255, 255, 255);
-        pdf.setFontSize(16);
-        pdf.setFont("helvetica", "bold");
-        pdf.text("ASPIRE TEKHUB SOLUTIONS", 40, 35);
+    logoImg.onerror = () => {
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      pdf.setFillColor(59, 130, 246);
+      pdf.rect(0, 0, pageWidth, 70, "F");
 
-        const currentDate = new Date().toLocaleDateString();
-        pdf.setFontSize(10);
-        pdf.text(`Date: ${currentDate}`, pageWidth - 120, 35);
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(16);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("ASPIRE TEKHUB SOLUTIONS", 40, 35);
 
-        pdf.setTextColor("black");
-        resolve();
-      };
-    });
-  };
+      const currentDate = new Date().toLocaleDateString();
+      const currentTime = new Date().toLocaleTimeString();
+
+      pdf.setFontSize(10);
+      pdf.text(`Date: ${currentDate}`, pageWidth - 120, 25);
+      pdf.text(`Time: ${currentTime}`, pageWidth - 120, 40);
+
+      pdf.setTextColor("black");
+      resolve();
+    };
+  });
+};
+
 
   const addStyledFooter = (pdf, tableBottomY) => {
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
 
-    const footerY = Math.min(pageHeight - 70, tableBottomY + 20);
+    const footerY = pageHeight - 60;
+
 
     pdf.setFillColor(59, 130, 246);
     pdf.rect(0, footerY, pageWidth, 60, "F");
@@ -131,18 +140,20 @@ const RequirementsTable = ({
     pdf.text(
       "Corporate Office: 1-8-303, 3rd Floor, VK Towers, SP Road, RasoolPura, Secunderabad - 500003",
       pageWidth / 2,
-      footerY + 25,
+      footerY + 15,
       { align: "center" }
     );
     pdf.text(
       "040 4519 5642 | info@aspireths.com | www.aspireths.com",
       pageWidth / 2,
-      footerY + 42,
+      footerY + 45,
       { align: "center" }
     );
     pdf.setTextColor(0, 0, 0);
   };
-
+  const doc = new jsPDF({
+    margin: [10, 10, 0, 10]
+  });
   return (
     <div className="requirements-table-container" style={{ marginTop: "20px" }} ref={tableRef}>
       <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #ddd" }}>
@@ -173,29 +184,32 @@ const RequirementsTable = ({
           </tr>
         </tbody>
       </table>
-<div style={{ textAlign: "center", marginTop: "20px" }}>
-  <button
-    onClick={() => {
-      if (grandTotal === 0) {
-        alert("Please select your requirements before downloading the PDF.");
-        return;
-      }
-      handleDownloadPDF();
-    }}
-    style={{
-      padding: "10px 20px",
-      background: grandTotal === 0 ? "#ccc" : "#4770DB",
-      color: "#fff",
-      border: "none",
-      borderRadius: "6px",
-      cursor: grandTotal === 0 ? "not-allowed" : "pointer",
-      fontSize: "16px",
-      fontWeight: "bold"
-    }}
-  >
-    Download PDF
-  </button>
-</div>
+      <div style={{ textAlign: "center", marginTop: "20px" }}>
+        <button
+          onClick={() => {
+            if (grandTotal === 0) {
+              alert("Please select your requirements before downloading the PDF.");
+              return;
+            }
+            handleDownloadPDF();
+          }}
+          style={{
+            padding: "10px 20px",
+            background: grandTotal === 0 ? "#ccc" : "#fbce17",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            cursor: grandTotal === 0 ? "not-allowed" : "pointer",
+            fontSize: "16px",
+            fontWeight: "bold",
+            marginBottom:"80px",
+            marginTop:"30px",
+           
+          }}
+        >
+          Download PDF
+        </button>
+      </div>
 
     </div>
   );
