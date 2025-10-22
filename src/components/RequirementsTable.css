@@ -1,0 +1,118 @@
+/* --- Requirements Table Container (Clean, No Extra Space) --- */
+.requirements-table-container {
+  width: 100%;
+  margin: 10px auto;             /* minimal top/bottom spacing */
+  padding: 15px;                 /* card padding */
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  overflow-x: auto;              /* allows horizontal scroll on small screens */
+}
+
+/* --- Table --- */
+.requirements-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+}
+
+.requirements-table th,
+.requirements-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+  font-size: 14px;
+}
+
+.requirements-table th {
+  background-color: #f8f9fa;
+}
+
+.requirements-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.requirements-table tr:last-child {
+  font-weight: bold;
+  background: #e9ecef;
+}
+
+/* --- Download Button --- */
+.requirements-table-container button {
+  padding: 8px 16px;
+  background: #fbce17;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+  margin-top: 15px;
+  margin-bottom: 20px;
+}
+
+.requirements-table-container button:hover {
+  background: #e0b915;
+}
+
+/* --- Hover Card Effect --- */
+.requirements-table-container:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+/* ===================== RESPONSIVE ===================== */
+
+/* Tablets & small laptops */
+@media (max-width: 1024px) {
+  .requirements-table-container {
+    margin-top: 15px;
+    padding: 12px;
+  }
+
+  .requirements-table th,
+  .requirements-table td {
+    font-size: 13px;
+    padding: 8px;
+  }
+}
+
+/* Tablets & landscape phones */
+@media (max-width: 768px) {
+  .requirements-table-container {
+    margin: 10px auto;
+    padding: 10px;
+  }
+
+  .requirements-table th,
+  .requirements-table td {
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  .requirements-table-container button {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+}
+
+/* Mobile screens */
+@media (max-width: 480px) {
+  .requirements-table-container {
+    margin: 5px auto;
+    padding: 8px;
+    border-radius: 8px;
+  }
+
+  .requirements-table th,
+  .requirements-table td {
+    font-size: 11px;
+    padding: 5px;
+  }
+
+  .requirements-table-container button {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+}

@@ -2,13 +2,6 @@
 body {
   margin-bottom: 0px;
 }
-.container {
-  font-family: Arial, sans-serif;
-  padding: 20px;
-  position: relative;
-  align-items: center;
-}
-
 /* --- Heading --- */
 .heading {
   position: fixed;
@@ -19,7 +12,7 @@ body {
   font-size: 2rem;
   color: #fff;
   background-color: #4770DB;
-  padding: 50px 20px 30px;
+  padding: 50px 20px 30px; /* top right left */
   margin: 0;
   z-index: 1000;
   overflow: hidden;
@@ -27,9 +20,37 @@ body {
   /* Mask Reveal effect */
   display: inline-block;
   white-space: nowrap;
-  clip-path: inset(0 100% 0 0); /* hides all text initially */
+  clip-path: inset(0 100% 0 0);
   animation: revealText 3s forwards;
 }
+
+@keyframes revealText {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+/* --- Responsive --- */
+@media (max-width: 1024px) {
+  .heading {
+    font-size: 1.8rem;
+    padding: 40px 15px 25px;
+  }
+}
+
+@media (max-width: 768px) {
+  .heading {
+    font-size: 1.5rem;
+    padding: 35px 10px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .heading {
+    font-size: 1.2rem;
+    padding: 25px 10px 15px;
+  }
+}
+
 
 /* Keyframes for reveal */
 @keyframes revealText {
@@ -80,6 +101,7 @@ body {
 .platform-section
 {
   width:70%;
+  
 }
 /* .users-list {
   display: grid;
@@ -88,26 +110,36 @@ body {
   justify-items: center;
   margin-top: 20px;
 } */
- .user
- {
+ 
+.user {
   display: flex;
   flex-direction: row;
-  margin-left: 250px;
-  gap:100px;
- }
-
-.users-list {
-  display: grid;
-  grid-template-columns: repeat(3, max-content); 
-  gap: 30px; 
-  justify-content: start; 
-   margin-right: 100rem;
-  margin-top: 30px;
-  margin-bottom: 30px;
-  width:90%;
-   
-  
+  flex-wrap: wrap;       /* allow items to wrap on smaller screens */
+  gap: 40px;             /* smaller gap for smaller screens */
+  justify-content: center; /* center items horizontally */
+  margin: 20px 0;        /* remove fixed margin-left */
 }
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 1024px) {
+  .user {
+    gap: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .user {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .user {
+    gap: 15px;
+  }
+}
+
+
 
 .platform-card {
   position: relative;       
@@ -164,68 +196,7 @@ body {
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
 }
 
-/* --- Sidebar --- */
-.sidebar {
-  position: fixed;
-  top: 20%;
-  right: 40px;
-  min-height: 100px;           /* initial small height */
-  max-height: 70vh;            /* limits growth */
-  width: 20%;
-  background: #4770DB;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  padding: 20px;
-  color: white;
-  overflow-y: auto;            /* scrolls if content exceeds max-height */
-  box-sizing: border-box;
-  transition: all 0.3s ease;   /* smooth height adjustment */
-  scrollbar-width: thin;
-}
 
-.sidebar::-webkit-scrollbar {
-  width: 8px;
-}
-
-.sidebar::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-}
-
-.sidebar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.4);
-  border-radius: 4px;
-}
-
-.sidebar ul {
-  list-style-type: disc;
-  padding-left: 20px;          /* proper indentation */
-  margin-bottom: 10px;
-}
-
-/* --- Buttons --- */
-.btn {
-  background: #4770DB;
-  color: #fff;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-bottom: 10px;
-}
-
-.btn:hover {
-  background: #4770DB;
-}
-
-/* --- Range Box --- */
-.range-box {
-  background: #fff;
-  border-radius: 8px;
-  padding: 10px;
-  border: 1px solid #ddd;
-  text-align: center;
-}
 
 /* --- Global fix --- */
 html, body {
@@ -236,15 +207,7 @@ html, body {
   box-sizing: border-box;
 }
 
-/* --- Container --- */
-.container {
-  font-family: Arial, sans-serif;
-  padding: 20px;
-  position: relative;
-  align-items: center;
-  max-width: 1200px;        /* ✅ restricts max width */
-  margin: 0 auto;           /* ✅ centers content horizontally */
-}
+
 
 /* --- Title & Subtitle --- */
 .title{
@@ -279,104 +242,10 @@ html, body {
 
 
 /* --- Sidebar --- */
-.sidebar {
-  position: fixed;
-  top: 20%;
-  right: 40px;
-  background: #4770DB;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  padding: 20px;
-  color: white;
-  box-sizing: border-box;
-  width: 300px;              /* ✅ fixed width that fits screen */
-  max-width: 90vw;           /* ✅ never exceeds screen */
-}
+
 /* components/RequirementsTable.css */
 /* components/RequirementsTable.css */
 /* components/RequirementsTable.css */
-.requirements-table-container {
-  width: 70%;                 /* table width */
-  overflow-x: auto;
-  margin: 30px 0 30px 20px;   /* top right bottom left => push table to left */
-  padding: 20px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  float: left;                /* makes it stick to the left */
-}
-
-
-.requirements-title {
-  color: #333;
-  margin-bottom: 20px;
-  font-size: 1.5rem;
-  font-weight: 600;
-  text-align: center;
-}
-
-.requirements-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: Arial, sans-serif;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  margin-bottom: 30px; /* Add gap below the table */
-}
-
-.requirements-table th {
-  background-color: #2c3e50;
-  color: white;
-  padding: 15px 20px;
-  text-align: left;
-  font-weight: 600;
-  border: 1px solid #34495e;
-  font-size: 1rem;
-}
-
-.requirements-table td {
-  padding: 15px 20px;
-  border: 1px solid #ddd;
-  vertical-align: top;
-  line-height: 1.5;
-}
-
-.requirement-header {
-  width: 35%;
-  min-width: 200px;
-}
-
-.specifications-header {
-  width: 65%;
-  min-width: 300px;
-}
-
-.requirement-cell {
-  font-weight: 600;
-  background-color: #f8f9fa;
-  color: #2c3e50;
-}
-
-.specifications-cell {
-  background-color: #fff;
-  color: #555;
-}
-
-.no-selection {
-  color: #999;
-  font-style: italic;
-}
-
-.requirement-row:hover {
-  background-color: #f8f9fa;
-}
-
-.requirement-row:hover .requirement-cell {
-  background-color: #e9ecef;
-}
-
-.requirement-row:hover .specifications-cell {
-  background-color: #f8f9fa;
-}
 
 /* Estimation section styles */
 .estimation-section {
@@ -403,7 +272,7 @@ html, body {
 /* Responsive design */
 @media (max-width: 1024px) {
   .requirements-table-container {
-    width: 70%;
+    width: 20%;
   }
 }
 

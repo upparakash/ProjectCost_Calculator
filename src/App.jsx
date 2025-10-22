@@ -13,7 +13,7 @@ import BillingAndEcommerce from "./components/BillingAndEcommerce";
 import AdminFeedback from "./components/AdminFeedback";
 import ExternalApis from "./components/ExternalApi";
 import Security from "./components/Security";
-import  RequirementsTable from "./components/RequirementsTable";
+import RequirementsTable from "./components/RequirementsTable";
 
 function App() {
   const [selectedPlatforms, setSelectedPlatforms] = useState([]);
@@ -31,7 +31,7 @@ function App() {
   return (
     <div className="container">
       <h1 className="heading">HOW MUCH TO MAKE AN APP</h1>
-      
+
       <div className="screen">
         {/* All your selection components */}
         <PlatformSelection
@@ -54,7 +54,7 @@ function App() {
           setSelectedUsers={setSelectedUsers}
 
 
-/>
+        />
 
         <UsersAndGenerated
           selectedGenerators={selectedGenerators}
@@ -112,8 +112,7 @@ function App() {
           selectedSecurity={selectedSecurity}
         />
       </div>
-     
-      {/* Sidebar */}
+
       <Sidebar
         selectedPlatforms={selectedPlatforms}
         selectedSizes={selectedSizes}
@@ -127,6 +126,10 @@ function App() {
         selectedApis={selectedApis}
         selectedSecurity={selectedSecurity}
       />
+
+
+      {/* Sidebar */}
+
     </div>
   );
 }

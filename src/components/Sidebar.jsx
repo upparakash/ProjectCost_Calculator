@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import "./Sidebar.css"; // make sure your CSS is updated
 
 function Sidebar({
   selectedPlatforms = [],
@@ -8,12 +9,13 @@ function Sidebar({
   selectedGenerators = [],
   selectedDates = [],
   selectedEngagement=[],
- selectedBilling=[],
- selectedAdmins=[],
- selectedApis=[],
- selectedSecurity=[],
+  selectedBilling=[],
+  selectedAdmins=[],
+  selectedApis=[],
+  selectedSecurity=[],
 }) {
-  
+  const [isOpen, setIsOpen] = useState(false);
+
   const total =
     selectedPlatforms.reduce((acc, p) => acc + p.price, 0) +
     selectedSizes.reduce((acc, s) => acc + s.price, 0) +
@@ -23,76 +25,43 @@ function Sidebar({
     selectedDates.reduce((acc, d) => acc + d.price, 0)+
     selectedEngagement.reduce((acc,s)=>acc+s.price,0)+
     selectedBilling.reduce((acc,b)=>acc+b.price,0)+
-     selectedAdmins.reduce((acc,a)=>acc+a.price,0)+
-     selectedApis.reduce((acc,ap)=>acc+ap.price,0)+
-     selectedSecurity.reduce((acc,s)=>acc+s.price,0);
+    selectedAdmins.reduce((acc,a)=>acc+a.price,0)+
+    selectedApis.reduce((acc,ap)=>acc+ap.price,0)+
+    selectedSecurity.reduce((acc,s)=>acc+s.price,0);
+
   return (
-    <div className="sidebar">
-      <h3>Check your website estimation</h3>
+    <>
+      {/* Menu button for mobile */}
+      <button className="sidebar-toggle" onClick={() => setIsOpen(!isOpen)}>
+        ☰
+      </button>
 
-      <ul>
-        {selectedPlatforms.map((p) => (
-          <li key={p.name}>{p.name} : {p.price}</li>
-        ))}
-      </ul>
+      <div className={`sidebar ${isOpen ? "open" : ""}`}>
+        <h3>Check your website estimation</h3>
 
-      <ul>
-        {selectedSizes.map((s) => (
-          <li key={s.name}>{s.name} : {s.price}</li>
+        {[
+          { items: selectedPlatforms, label: "Platforms" },
+          { items: selectedSizes, label: "Sizes" },
+          { items: selectedUis, label: "UI" },
+          { items: selectedUsers, label: "Users" },
+          { items: selectedGenerators, label: "Generators" },
+          { items: selectedDates, label: "Dates" },
+          { items: selectedEngagement, label: "Engagement" },
+          { items: selectedBilling, label: "Billing" },
+          { items: selectedAdmins, label: "Admins" },
+          { items: selectedApis, label: "APIs" },
+          { items: selectedSecurity, label: "Security" },
+        ].map((group, index) => (
+          <ul key={index}>
+            {group.items.map((item) => (
+              <li key={item.name}>{item.name} : ₹{item.price}</li>
+            ))}
+          </ul>
         ))}
-      </ul>
 
-      <ul>
-        {selectedUis.map((u) => (
-          <li key={u.name}>{u.name} : {u.price}</li>
-        ))}
-      </ul>
-
-      <ul>
-        {selectedUsers.map((us) => (
-          <li key={us.name}>{us.name} : {us.price}</li>
-        ))}
-      </ul>
-
-      <ul>
-        {selectedGenerators.map((g) => (
-          <li key={g.name}>{g.name} : {g.price}</li>
-        ))}
-      </ul>
-
-      <ul>
-        {selectedDates.map((d) => (
-          <li key={d.name}>{d.name} : {d.price}</li>
-        ))}
-      </ul>
-      <ul>
-        {selectedEngagement.map((s)=>(
-          <li key={s.name}>{s.name} : {s.price}</li>
-        ))}
-      </ul>
-      <ul>
-        {selectedBilling.map((b)=>(
-          <li key={b.name}>{b.name} : {b.price}</li>)
-        )}
-      </ul>
-      <ul>
-        {selectedAdmins.map((a)=>(
-          <li key={a.name}>{a.name} : {a.price}</li>)
-        )}
-      </ul>
-      <ul>
-        {selectedApis.map((ap)=>(
-          <li key={ap.name}>{ap.name} : {ap.price}</li>
-        ))}
-      </ul>
-      <ul>
-        {selectedSecurity.map((s)=>(
-          <li key={s.name}>{s.name} : {s.price}</li>
-        ))}
-      </ul>
-
-      <h4>Total Cost: ₹{total}</h4>
-    </div>
+        <h4>Total Cost: ₹{total}</h4>
+      </div>
+    </>
   );
 }
 

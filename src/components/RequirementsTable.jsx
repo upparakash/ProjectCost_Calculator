@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import "./RequirementsTable.css"; // Make sure to include the responsive CSS
 
 const RequirementsTable = ({
   selectedPlatforms,
@@ -15,7 +16,6 @@ const RequirementsTable = ({
   selectedApis,
   selectedSecurity
 }) => {
-
   const tableRef = useRef();
 
   const getTotalPrice = (array) => {
@@ -37,10 +37,16 @@ const RequirementsTable = ({
     { id: 11, name: "Security", items: selectedSecurity }
   ];
 
-  const grandTotal = requirements.reduce((acc, req) => acc + getTotalPrice(req.items), 0);
+  const grandTotal = requirements.reduce(
+    (acc, req) => acc + getTotalPrice(req.items),
+    0
+  );
 
   const handleDownloadPDF = async () => {
-    if (grandTotal === 0) return; // Safety check
+    if (grandTotal === 0) {
+      alert("Please select your requirements before downloading the PDF.");
+      return;
+    }
 
     try {
       const input = tableRef.current;
@@ -56,11 +62,10 @@ const RequirementsTable = ({
       pdf.text("REQUIREMENTS SUMMARY", pageWidth / 2, 110, { align: "center" });
 
       const imgProps = pdf.getImageProperties(imgData);
-      const pdfWidth = pdf.internal.pageSize.getWidth() - 60;
+      const pdfWidth = pageWidth - 60;
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
       pdf.addImage(imgData, "PNG", 30, 130, pdfWidth, pdfHeight);
-
       addStyledFooter(pdf, 100 + pdfHeight);
 
       pdf.save("requirements-summary.pdf");
@@ -70,66 +75,62 @@ const RequirementsTable = ({
   };
 
   const addStyledHeader = (pdf) => {
-  return new Promise((resolve) => {
-    const logoUrl = "/AspireLogo.png";
-    const logoImg = new Image();
-    logoImg.crossOrigin = "Anonymous";
-    logoImg.src = logoUrl;
+    return new Promise((resolve) => {
+      const logoUrl = "/AspireLogo.png";
+      const logoImg = new Image();
+      logoImg.crossOrigin = "Anonymous";
+      logoImg.src = logoUrl;
 
-    logoImg.onload = () => {
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      pdf.setFillColor(59, 130, 246);
-      pdf.rect(0, 0, pageWidth, 70, "F");
+      logoImg.onload = () => {
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        pdf.setFillColor(59, 130, 246);
+        pdf.rect(0, 0, pageWidth, 70, "F");
 
-      pdf.setTextColor(255, 255, 255);
-      pdf.addImage(logoImg, "PNG", 40, 10, 40, 40);
+        pdf.setTextColor(255, 255, 255);
+        pdf.addImage(logoImg, "PNG", 40, 10, 40, 40);
 
-      pdf.setFontSize(16);
-      pdf.setFont("helvetica", "bold");
-      pdf.text("ASPIRE TEKHUB SOLUTIONS", 90, 35);
+        pdf.setFontSize(16);
+        pdf.setFont("helvetica", "bold");
+        pdf.text("ASPIRE TEKHUB SOLUTIONS", 90, 35);
 
-      const currentDate = new Date().toLocaleDateString();
-      const currentTime = new Date().toLocaleTimeString();
+        const currentDate = new Date().toLocaleDateString();
+        const currentTime = new Date().toLocaleTimeString();
 
-      pdf.setFontSize(10);
-      // ✅ Line by line
-      pdf.text(`Date: ${currentDate}`, pageWidth - 120, 25);
-      pdf.text(`Time: ${currentTime}`, pageWidth - 120, 40);
+        pdf.setFontSize(10);
+        pdf.text(`Date: ${currentDate}`, pageWidth - 120, 25);
+        pdf.text(`Time: ${currentTime}`, pageWidth - 120, 40);
 
-      pdf.setTextColor(0, 0, 0);
-      resolve();
-    };
+        pdf.setTextColor(0, 0, 0);
+        resolve();
+      };
 
-    logoImg.onerror = () => {
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      pdf.setFillColor(59, 130, 246);
-      pdf.rect(0, 0, pageWidth, 70, "F");
+      logoImg.onerror = () => {
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        pdf.setFillColor(59, 130, 246);
+        pdf.rect(0, 0, pageWidth, 70, "F");
 
-      pdf.setTextColor(255, 255, 255);
-      pdf.setFontSize(16);
-      pdf.setFont("helvetica", "bold");
-      pdf.text("ASPIRE TEKHUB SOLUTIONS", 40, 35);
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFontSize(16);
+        pdf.setFont("helvetica", "bold");
+        pdf.text("ASPIRE TEKHUB SOLUTIONS", 40, 35);
 
-      const currentDate = new Date().toLocaleDateString();
-      const currentTime = new Date().toLocaleTimeString();
+        const currentDate = new Date().toLocaleDateString();
+        const currentTime = new Date().toLocaleTimeString();
 
-      pdf.setFontSize(10);
-      pdf.text(`Date: ${currentDate}`, pageWidth - 120, 25);
-      pdf.text(`Time: ${currentTime}`, pageWidth - 120, 40);
+        pdf.setFontSize(10);
+        pdf.text(`Date: ${currentDate}`, pageWidth - 120, 25);
+        pdf.text(`Time: ${currentTime}`, pageWidth - 120, 40);
 
-      pdf.setTextColor("black");
-      resolve();
-    };
-  });
-};
-
+        pdf.setTextColor(0, 0, 0);
+        resolve();
+      };
+    });
+  };
 
   const addStyledFooter = (pdf, tableBottomY) => {
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
-
     const footerY = pageHeight - 60;
-
 
     pdf.setFillColor(59, 130, 246);
     pdf.rect(0, footerY, pageWidth, 60, "F");
@@ -151,48 +152,44 @@ const RequirementsTable = ({
     );
     pdf.setTextColor(0, 0, 0);
   };
-  const doc = new jsPDF({
-    margin: [10, 10, 0, 10]
-  });
+
   return (
-    <div className="requirements-table-container" style={{ marginTop: "20px" }} ref={tableRef}>
-      <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #ddd" }}>
-        <thead>
-          <tr style={{ background: "#f8f9fa" }}>
-            <th style={{ padding: "12px", border: "1px solid #ddd", textAlign: "left" }}>Requirement Questions</th>
-            <th style={{ padding: "12px", border: "1px solid #ddd", textAlign: "left" }}>Selected Specifications</th>
-            <th style={{ padding: "12px", border: "1px solid #ddd", textAlign: "left" }}>Total Price</th>
-          </tr>
-        </thead>
-        <tbody>
-          {requirements.map(req => (
-            <tr key={req.id}>
-              <td style={{ padding: "10px", border: "1px solid #ddd" }}>{req.name}</td>
-              <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                {req.items && req.items.length > 0
-                  ? req.items.map(item => item.name).join(", ")
-                  : <span style={{ color: "#999", fontStyle: "italic" }}>None selected</span>}
-              </td>
-              <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                {getTotalPrice(req.items)}
-              </td>
+    <div
+      className="requirements-table-container"
+      style={{ marginTop: "20px" }}
+      ref={tableRef}
+    >
+      <div style={{ overflowX: "auto" }}>
+        <table className="requirements-table">
+          <thead>
+            <tr>
+              <th>Requirement Questions</th>
+              <th>Selected Specifications</th>
+              <th>Total Price</th>
             </tr>
-          ))}
-          <tr style={{ fontWeight: "bold", background: "#e9ecef" }}>
-            <td style={{ padding: "12px", border: "1px solid #ddd" }} colSpan="2">Grand Total</td>
-            <td style={{ padding: "12px", border: "1px solid #ddd" }}>{grandTotal}</td>
-          </tr>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {requirements.map((req) => (
+              <tr key={req.id}>
+                <td>{req.name}</td>
+                <td>
+                  {req.items && req.items.length > 0
+                    ? req.items.map((item) => item.name).join(", ")
+                    : <span>None selected</span>}
+                </td>
+                <td>{getTotalPrice(req.items)}</td>
+              </tr>
+            ))}
+            <tr style={{ fontWeight: "bold", background: "#e9ecef" }}>
+              <td colSpan="2">Grand Total</td>
+              <td>{grandTotal}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <div style={{ textAlign: "center", marginTop: "20px" }}>
         <button
-          onClick={() => {
-            if (grandTotal === 0) {
-              alert("Please select your requirements before downloading the PDF.");
-              return;
-            }
-            handleDownloadPDF();
-          }}
+          onClick={handleDownloadPDF}
           style={{
             padding: "10px 20px",
             background: grandTotal === 0 ? "#ccc" : "#fbce17",
@@ -202,15 +199,14 @@ const RequirementsTable = ({
             cursor: grandTotal === 0 ? "not-allowed" : "pointer",
             fontSize: "16px",
             fontWeight: "bold",
-            marginBottom:"80px",
-            marginTop:"30px",
-           
+            marginBottom: "80px",
+            marginTop: "30px",
           }}
         >
           Download PDF
         </button>
       </div>
-
+      {/* hi */}
     </div>
   );
 };
