@@ -91,7 +91,7 @@ const RequirementsTable = ({
       formDataToSend.append("phone", phone);
       formDataToSend.append("message", message);
 
-      const res = await fetch("http://15.206.203.190:5000/send-pdf", {
+      const res = await fetch("https://app.aspireths.com/send-pdf", {
         method: "POST",
         body: formDataToSend,
       });
