@@ -50,11 +50,9 @@ function App() {
         />
 
         <UserSelection
-          selectedUsers={selectedUsers}
+         selectedUsers={selectedUsers}
           setSelectedUsers={setSelectedUsers}
-
-
-        />
+          />
 
         <UsersAndGenerated
           selectedGenerators={selectedGenerators}
