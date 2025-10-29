@@ -30,7 +30,7 @@ function App() {
 
   return (
     <div className="container">
-      <h1 className="heading">HOW MUCH TO MAKE AN APP</h1>
+      <h1 className="heading">HOW MUCH COST TO MAKE AN APP</h1>
 
       <div className="screen">
         {/* All your selection components */}

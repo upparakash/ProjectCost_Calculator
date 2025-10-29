@@ -37,7 +37,7 @@ function Sidebar({
       </button>
 
       <div className={`sidebar ${isOpen ? "open" : ""}`}>
-        <h3>Check your website estimation</h3>
+        <h3>Check your App estimation</h3>
 
         {[
           { items: selectedPlatforms, label: "Platforms" },

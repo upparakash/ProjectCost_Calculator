@@ -1,129 +1,72 @@
-/* --- Requirements Table Container (Clean, No Extra Space) --- */
-.requirements-table-container {
-  width: 100%;
-  margin: 10px auto;             /* minimal top/bottom spacing */
-  padding: 15px;                 /* card padding */
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-  overflow-x: auto;              /* allows horizontal scroll on small screens */
+/* Wrapper aligns both table and form */
+.table-form-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 40px auto;
+  gap: 20px;
 }
 
-/* --- Table --- */
+/* ===================== TABLE ===================== */
+.requirements-table-container {
+  width: 90%;
+  max-width: 800px;
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.requirements-table-container h3 {
+  text-align: center;
+  color: #1e40af;
+  margin-bottom: 15px;
+}
+
 .requirements-table {
   width: 100%;
   border-collapse: collapse;
-  font-family: Arial, sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .requirements-table th,
 .requirements-table td {
-  padding: 10px;
-  border: 1px solid #ddd;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
   text-align: left;
   font-size: 14px;
+  color: #334155;
 }
 
 .requirements-table th {
-  background-color: #f8f9fa;
+  background-color: #3b82f6;
+  color: #fff;
+  text-transform: uppercase;
 }
 
 .requirements-table tr:nth-child(even) {
-  background-color: #f9f9f9;
+  background-color: #f1f5f9;
 }
 
-.requirements-table tr:last-child {
-  font-weight: bold;
-  background: #e9ecef;
+.requirements-table tr:hover {
+  background-color: #e2e8f0;
 }
 
-/* --- Download Button --- */
-.requirements-table-container button {
-  padding: 8px 16px;
-  background: #fbce17;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: bold;
-  margin-top: 15px;
-  margin-bottom: 20px;
+.grand-total-row td {
+  background-color: #e0e7ff;
+  font-weight: 700;
+  color: #1e40af;
 }
 
-.requirements-table-container button:hover {
-  background: #e0b915;
-}
-
-/* --- Hover Card Effect --- */
-.requirements-table-container:hover {
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-  transform: translateY(-2px);
-}
-
-/* ===================== RESPONSIVE ===================== */
-
-/* Tablets & small laptops */
-@media (max-width: 1024px) {
-  .requirements-table-container {
-    margin-top: 15px;
-    padding: 12px;
-  }
-
-  .requirements-table th,
-  .requirements-table td {
-    font-size: 13px;
-    padding: 8px;
-  }
-}
-
-/* Tablets & landscape phones */
-@media (max-width: 768px) {
-  .requirements-table-container {
-    margin: 10px auto;
-    padding: 10px;
-  }
-
-  .requirements-table th,
-  .requirements-table td {
-    font-size: 12px;
-    padding: 6px;
-  }
-
-
-  .requirements-table-container button {
-    font-size: 13px;
-    padding: 6px 12px;
-  }
-}
-
-/* Mobile screens */
-@media (max-width: 480px) {
-  .requirements-table-container {
-    margin: 5px auto;
-    padding: 8px;
-    border-radius: 8px;
-  }
-
-  .requirements-table th,
-  .requirements-table td {
-    font-size: 11px;
-    padding: 5px;
-  }
-
-  .requirements-table-container button {
-    font-size: 12px;
-    padding: 5px 10px;
-  }
-}
+/* ===================== FORM ===================== */
 .user-form {
-  max-width: 500px;
-  margin: 30px auto;
-  padding: 20px;
+  width: 90%;
+  max-width: 800px;
   background: #f8fafc;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .user-form h3 {
@@ -134,7 +77,7 @@
 
 .user-form label {
   display: block;
-  margin: 10px 0 5px;
+  margin-top: 10px;
   font-weight: 600;
   color: #334155;
 }
@@ -143,10 +86,10 @@
 .user-form textarea {
   width: 100%;
   padding: 10px;
+  margin-top: 6px;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
   font-size: 14px;
-  transition: border-color 0.2s ease;
 }
 
 .user-form input:focus,
@@ -161,10 +104,9 @@
   padding: 12px;
   background-color: #3b82f6;
   color: white;
-  font-size: 16px;
-  font-weight: 600;
   border: none;
   border-radius: 8px;
+  font-size: 16px;
   cursor: pointer;
   transition: background 0.3s ease;
 }
@@ -173,29 +115,18 @@
   background-color: #2563eb;
 }
 
-/* ----------- Status Message ----------- */
 .status-message {
   text-align: center;
-  margin-top: 10px;
+  color: #16a34a;
   font-weight: 500;
-  color: #1e40af;
+  margin-top: 10px;
 }
 
-/* ----------- Mobile Responsiveness ----------- */
+/* ===================== RESPONSIVE ===================== */
 @media (max-width: 600px) {
+  .requirements-table-container,
   .user-form {
-    width: 90%;
+    width: 95%;
     padding: 15px;
   }
-
-  .user-form input,
-  .user-form textarea {
-    font-size: 13px;
-  }
-
-  .user-form button {
-    font-size: 14px;
-    padding: 10px;
-  }
 }
-
