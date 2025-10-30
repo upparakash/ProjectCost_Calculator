@@ -25,9 +25,9 @@ const RequirementsTable = ({
   const [statusMessage, setStatusMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ✅ Calculate if any requirement is selected
+  // ✅ Compute if user made any selections
   const hasSelections = useMemo(() => {
-    const allSelections = [
+    const all = [
       selectedPlatforms,
       selectedSizes,
       selectedUis,
@@ -40,7 +40,8 @@ const RequirementsTable = ({
       selectedApis,
       selectedSecurity,
     ];
-    return allSelections.some((arr) => Array.isArray(arr) && arr.length > 0);
+    // ensure all are arrays before checking length
+    return all.some((arr) => Array.isArray(arr) && arr.length > 0);
   }, [
     selectedPlatforms,
     selectedSizes,
@@ -55,7 +56,7 @@ const RequirementsTable = ({
     selectedSecurity,
   ]);
 
-  // ✅ Validation
+  // ✅ Validation logic
   const validateForm = () => {
     const { name, email, phone } = formData;
     const newErrors = {};
@@ -79,19 +80,18 @@ const RequirementsTable = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  // ✅ Handle input change
+  // ✅ Input handler
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: "" });
   };
 
-  // ✅ Submit
+  // ✅ Submit handler
   const handleSendPdf = async (e) => {
     e.preventDefault();
-
     const isValid = validateForm();
     if (!isValid) {
-      setStatusMessage("⚠️ Please fix the errors before submitting.");
+      setStatusMessage("⚠️ Please correct the errors before submitting.");
       return;
     }
 
@@ -100,24 +100,16 @@ const RequirementsTable = ({
       setStatusMessage("📤 Sending email...");
 
       const formDataToSend = new FormData();
-      formDataToSend.append("name", formData.name);
-      formDataToSend.append("email", formData.email);
-      formDataToSend.append("phone", formData.phone);
-      formDataToSend.append("message", formData.message || "");
+      Object.entries(formData).forEach(([key, value]) =>
+        formDataToSend.append(key, value)
+      );
 
       const res = await fetch("https://app.aspireths.com/send-pdf", {
         method: "POST",
         body: formDataToSend,
       });
 
-      let data;
-      try {
-        data = await res.json();
-      } catch {
-        const text = await res.text();
-        console.error("Non-JSON response:", text);
-        throw new Error("Invalid response from server");
-      }
+      const data = await res.json().catch(() => ({}));
 
       if (res.ok && data.message) {
         setStatusMessage("✅ Email sent successfully!");
@@ -135,20 +127,14 @@ const RequirementsTable = ({
 
   return (
     <div className="requirements-container">
-      {!hasSelections ? (
+      {!hasSelections && (
         <p className="info-text">
-          ⚠️ Please select at least one requirement to proceed.
+          ⚠️ Please select at least one requirement to enable this form.
         </p>
-      ) : (
-        <h3>Where should we send your detailed estimate?</h3>
       )}
 
-      <form
-        className={user-form ${!hasSelections ? "disabled" : ""}}
-        noValidate
-        onSubmit={handleSendPdf}
-      >
-        <fieldset disabled={!hasSelections}>
+      <div className={form-wrapper ${!hasSelections ? "disabled" : ""}}>
+        <form onSubmit={handleSendPdf} noValidate>
           <div className="form-group">
             <label>Your Name</label>
             <input
@@ -157,6 +143,7 @@ const RequirementsTable = ({
               placeholder="Enter your full name"
               value={formData.name}
               onChange={handleChange}
+              disabled={!hasSelections}
             />
             {errors.name && <p className="error-text">{errors.name}</p>}
           </div>
@@ -169,6 +156,7 @@ const RequirementsTable = ({
               placeholder="Enter your email address"
               value={formData.email}
               onChange={handleChange}
+              disabled={!hasSelections}
             />
             {errors.email && <p className="error-text">{errors.email}</p>}
           </div>
@@ -181,6 +169,7 @@ const RequirementsTable = ({
               placeholder="Enter your 10-digit phone number"
               value={formData.phone}
               onChange={handleChange}
+              disabled={!hasSelections}
             />
             {errors.phone && <p className="error-text">{errors.phone}</p>}
           </div>
@@ -189,24 +178,29 @@ const RequirementsTable = ({
             <label>Your Message (optional)</label>
             <textarea
               name="message"
-              placeholder="Write your message here (optional)"
+              placeholder="Write your message (optional)"
               value={formData.message}
               onChange={handleChange}
+              disabled={!hasSelections}
             />
           </div>
 
           <button type="submit" disabled={!hasSelections || loading}>
             {loading ? "Sending..." : "Send PDF to Email"}
           </button>
-        </fieldset>
-      </form>
+        </form>
+
+        {!hasSelections && (
+          <div className="form-overlay">
+            <p>Please make selections above to enable this form.</p>
+          </div>
+        )}
+      </div>
 
       {statusMessage && (
         <p
           className={`status-message ${
-            statusMessage.startsWith("✅")
-              ? "success-text"
-              : "error-text"
+            statusMessage.startsWith("✅") ? "success-text" : "error-text"
           }`}
         >
           {statusMessage}
