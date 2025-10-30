@@ -1,22 +1,64 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import "./RequirementsTable.css";
 
-const RequirementsTable = () => {
+const RequirementsTable = ({
+  selectedPlatforms = [],
+  selectedSizes = [],
+  selectedUis = [],
+  selectedUsers = [],
+  selectedGenerators = [],
+  selectedDates = [],
+  selectedEngagement = [],
+  selectedBilling = [],
+  selectedAdmins = [],
+  selectedApis = [],
+  selectedSecurity = [],
+}) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
+    message: "",
   });
 
   const [errors, setErrors] = useState({});
   const [statusMessage, setStatusMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ✅ Validation function
+  // ✅ Calculate if any requirement is selected
+  const hasSelections = useMemo(() => {
+    const allSelections = [
+      selectedPlatforms,
+      selectedSizes,
+      selectedUis,
+      selectedUsers,
+      selectedGenerators,
+      selectedDates,
+      selectedEngagement,
+      selectedBilling,
+      selectedAdmins,
+      selectedApis,
+      selectedSecurity,
+    ];
+    return allSelections.some((arr) => Array.isArray(arr) && arr.length > 0);
+  }, [
+    selectedPlatforms,
+    selectedSizes,
+    selectedUis,
+    selectedUsers,
+    selectedGenerators,
+    selectedDates,
+    selectedEngagement,
+    selectedBilling,
+    selectedAdmins,
+    selectedApis,
+    selectedSecurity,
+  ]);
+
+  // ✅ Validation
   const validateForm = () => {
     const { name, email, phone } = formData;
     const newErrors = {};
-
     const nameRegex = /^[A-Za-z\s]+$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/;
     const phoneRegex = /^\d{10}$/;
@@ -37,20 +79,20 @@ const RequirementsTable = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // ✅ Input change handler
+  // ✅ Handle input change
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: "" });
   };
 
-  // ✅ Submit handler
+  // ✅ Submit
   const handleSendPdf = async (e) => {
-    e.preventDefault(); // 🚫 Prevent native form submit
+    e.preventDefault();
 
     const isValid = validateForm();
     if (!isValid) {
       setStatusMessage("⚠️ Please fix the errors before submitting.");
-      return false; // 🚫 Stops backend trigger even on Vercel
+      return;
     }
 
     try {
@@ -61,8 +103,8 @@ const RequirementsTable = () => {
       formDataToSend.append("name", formData.name);
       formDataToSend.append("email", formData.email);
       formDataToSend.append("phone", formData.phone);
+      formDataToSend.append("message", formData.message || "");
 
-      // ✅ Always use full backend URL
       const res = await fetch("https://app.aspireths.com/send-pdf", {
         method: "POST",
         body: formDataToSend,
@@ -73,15 +115,15 @@ const RequirementsTable = () => {
         data = await res.json();
       } catch {
         const text = await res.text();
-        console.error("Non-JSON response from backend:", text);
+        console.error("Non-JSON response:", text);
         throw new Error("Invalid response from server");
       }
 
-      if (res.ok && data.success) {
+      if (res.ok && data.message) {
         setStatusMessage("✅ Email sent successfully!");
-        setFormData({ name: "", email: "", phone: "" });
+        setFormData({ name: "", email: "", phone: "", message: "" });
       } else {
-        throw new Error(data.message || "Something went wrong.");
+        throw new Error(data.error || "Something went wrong.");
       }
     } catch (err) {
       console.error("Error:", err);
@@ -93,54 +135,75 @@ const RequirementsTable = () => {
 
   return (
     <div className="requirements-container">
-      <h2>Request Your PDF</h2>
+      {!hasSelections ? (
+        <p className="info-text">
+          ⚠️ Please select at least one requirement to proceed.
+        </p>
+      ) : (
+        <h3>Where should we send your detailed estimate?</h3>
+      )}
 
-      {/* ✅ onSubmit ensures Enter key also works */}
-      <form className="user-form" noValidate onSubmit={handleSendPdf}>
-        <div className="form-group">
-          <label>Name</label>
-          <input
-            type="text"
-            name="name"
-            placeholder="Enter your full name"
-            value={formData.name}
-            onChange={handleChange}
-          />
-          {errors.name && <p className="error-text">{errors.name}</p>}
-        </div>
+      <form
+        className={user-form ${!hasSelections ? "disabled" : ""}}
+        noValidate
+        onSubmit={handleSendPdf}
+      >
+        <fieldset disabled={!hasSelections}>
+          <div className="form-group">
+            <label>Your Name</label>
+            <input
+              type="text"
+              name="name"
+              placeholder="Enter your full name"
+              value={formData.name}
+              onChange={handleChange}
+            />
+            {errors.name && <p className="error-text">{errors.name}</p>}
+          </div>
 
-        <div className="form-group">
-          <label>Email</label>
-          <input
-            type="email"
-            name="email"
-            placeholder="Enter your email address"
-            value={formData.email}
-            onChange={handleChange}
-          />
-          {errors.email && <p className="error-text">{errors.email}</p>}
-        </div>
+          <div className="form-group">
+            <label>Your Email</label>
+            <input
+              type="email"
+              name="email"
+              placeholder="Enter your email address"
+              value={formData.email}
+              onChange={handleChange}
+            />
+            {errors.email && <p className="error-text">{errors.email}</p>}
+          </div>
 
-        <div className="form-group">
-          <label>Phone Number</label>
-          <input
-            type="tel"
-            name="phone"
-            placeholder="Enter your 10-digit phone number"
-            value={formData.phone}
-            onChange={handleChange}
-          />
-          {errors.phone && <p className="error-text">{errors.phone}</p>}
-        </div>
+          <div className="form-group">
+            <label>Your Phone</label>
+            <input
+              type="tel"
+              name="phone"
+              placeholder="Enter your 10-digit phone number"
+              value={formData.phone}
+              onChange={handleChange}
+            />
+            {errors.phone && <p className="error-text">{errors.phone}</p>}
+          </div>
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Sending..." : "Send PDF to Email"}
-        </button>
+          <div className="form-group">
+            <label>Your Message (optional)</label>
+            <textarea
+              name="message"
+              placeholder="Write your message here (optional)"
+              value={formData.message}
+              onChange={handleChange}
+            />
+          </div>
+
+          <button type="submit" disabled={!hasSelections || loading}>
+            {loading ? "Sending..." : "Send PDF to Email"}
+          </button>
+        </fieldset>
       </form>
 
       {statusMessage && (
         <p
-          className={`${
+          className={`status-message ${
             statusMessage.startsWith("✅")
               ? "success-text"
               : "error-text"
