@@ -1,7 +1,24 @@
 import React, { useRef, useState, useMemo, useEffect } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import "./RequirementsTable.css";
+// keep your CSS import if you want, but we use inline styles to prevent CSS-missing hiding issues
+// import "./RequirementsTable.css";
+
+const inlineStyles = {
+  container: { maxWidth: 980, margin: "16px auto", padding: 12, fontFamily: "Inter, Arial, sans-serif" },
+  debugBox: { background: "#f0f8ff", border: "1px solid #d0e7ff", padding: 10, borderRadius: 6, marginBottom: 12 },
+  tableWrap: { display: "block", position: "relative", zIndex: 99, background: "#fff", borderRadius: 6, overflow: "auto", boxShadow: "0 2px 8px rgba(0,0,0,0.05)" },
+  table: { width: "100%", borderCollapse: "collapse", minWidth: 600 },
+  thtd: { padding: "10px 12px", border: "1px solid #eee", textAlign: "left", background: "#fff" },
+  infoText: { color: "#555", margin: "8px 0" },
+  formWrapper: { position: "relative", marginTop: 12 },
+  overlay: { position: "absolute", inset: 0, display: "flex", justifyContent: "center", alignItems: "center", background: "rgba(255,255,255,0.9)", zIndex: 90, pointerEvents: "none", borderRadius: 6 },
+  input: { padding: "8px", borderRadius: 6, border: "1px solid #ccc", width: "100%", boxSizing: "border-box" },
+  textarea: { padding: "8px", borderRadius: 6, border: "1px solid #ccc", width: "100%", minHeight: 90, boxSizing: "border-box" },
+  button: { padding: "10px 14px", borderRadius: 8, border: "none", background: "#0b74de", color: "#fff", cursor: "pointer", width: "100%" },
+  error: { color: "red", fontSize: 13, marginTop: 6 },
+  status: { marginTop: 10, fontWeight: 600 },
+};
 
 const RequirementsTable = ({
   selectedPlatforms = [],
@@ -16,18 +33,13 @@ const RequirementsTable = ({
   selectedApis = [],
   selectedSecurity = [],
 }) => {
-  const tableRef = useRef();
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    message: "",
-  });
+  const tableRef = useRef(null);
+  const [formData, setFormData] = useState({ name: "", email: "", phone: "", message: "" });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
 
-  // --- compute total selections
+  // robust totalSelectedCount
   const totalSelectedCount = useMemo(() => {
     const all = [
       selectedPlatforms,
@@ -42,10 +54,7 @@ const RequirementsTable = ({
       selectedApis,
       selectedSecurity,
     ];
-    return all.reduce((acc, arr) => {
-      if (Array.isArray(arr)) return acc + arr.length;
-      return acc;
-    }, 0);
+    return all.reduce((acc, arr) => (Array.isArray(arr) ? acc + arr.length : acc), 0);
   }, [
     selectedPlatforms,
     selectedSizes,
@@ -62,20 +71,11 @@ const RequirementsTable = ({
 
   const hasSelections = totalSelectedCount > 0;
 
-  // --- debug logging to console (visible on Vercel)
+  // DEBUG: visible props for Vercel diagnosis
   useEffect(() => {
-    console.log("RequirementsTable mounted/updated:");
-    console.log("selectedPlatforms:", selectedPlatforms);
-    console.log("selectedSizes:", selectedSizes);
-    console.log("selectedUis:", selectedUis);
-    console.log("selectedUsers:", selectedUsers);
-    console.log("selectedGenerators:", selectedGenerators);
-    console.log("selectedDates:", selectedDates);
-    console.log("selectedEngagement:", selectedEngagement);
-    console.log("selectedBilling:", selectedBilling);
-    console.log("selectedAdmins:", selectedAdmins);
-    console.log("selectedApis:", selectedApis);
-    console.log("selectedSecurity:", selectedSecurity);
+    // visible console logs for Vercel
+    console.log("RequirementsTable props (debug):");
+    console.log({ selectedPlatforms, selectedSizes, selectedUis, selectedUsers, selectedGenerators, selectedDates, selectedEngagement, selectedBilling, selectedAdmins, selectedApis, selectedSecurity });
     console.log("totalSelectedCount:", totalSelectedCount);
   }, [
     selectedPlatforms,
@@ -92,7 +92,6 @@ const RequirementsTable = ({
     totalSelectedCount,
   ]);
 
-  // --- helpers
   const getTotalPrice = (array) => {
     if (!Array.isArray(array) || array.length === 0) return 0;
     return array.reduce((acc, item) => acc + (Number(item.price) || 0), 0);
@@ -112,7 +111,6 @@ const RequirementsTable = ({
     { id: 11, name: "Security", items: selectedSecurity },
   ];
 
-  // --- form handlers (unchanged)
   const handleInputChange = (e) => {
     setFormData((p) => ({ ...p, [e.target.name]: e.target.value }));
     setErrors((p) => ({ ...p, [e.target.name]: "" }));
@@ -126,21 +124,18 @@ const RequirementsTable = ({
     const phoneRegex = /^\d{10}$/;
 
     if (!name.trim()) newErrors.name = "Name is required.";
-    else if (!nameRegex.test(name))
-      newErrors.name = "Only letters and spaces are allowed.";
+    else if (!nameRegex.test(name)) newErrors.name = "Only letters and spaces are allowed.";
 
     if (!email.trim()) newErrors.email = "Email is required.";
-    else if (!emailRegex.test(email))
-      newErrors.email = "Enter a valid email (e.g., akhila@gmail.com).";
+    else if (!emailRegex.test(email)) newErrors.email = "Enter a valid email (e.g., akhila@gmail.com).";
 
     if (!phone.trim()) newErrors.phone = "Phone number is required.";
-    else if (!phoneRegex.test(phone))
-      newErrors.phone = "Enter a valid 10-digit number.";
+    else if (!phoneRegex.test(phone)) newErrors.phone = "Enter a valid 10-digit number.";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-// --- header/footer helpers (unchanged)
+
   const addStyledHeader = (pdf) =>
     new Promise((resolve) => {
       const logoUrl = "/AspireLogo.png";
@@ -169,7 +164,8 @@ const RequirementsTable = ({
       logoImg.onerror = () => resolve();
     });
 
-  const addStyledFooter = (pdf, tableBottomY) => {
+
+const addStyledFooter = (pdf, tableBottomY) => {
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
     const footerY = Math.min(pageHeight - 70, tableBottomY + 20);
@@ -192,7 +188,6 @@ const RequirementsTable = ({
     );
   };
 
-  // --- main submit
   const handleSendPdf = async (e) => {
     e.preventDefault();
     if (!hasSelections) {
@@ -219,6 +214,7 @@ const RequirementsTable = ({
       pdf.setFont("helvetica", "bold");
       pdf.setFontSize(16);
       pdf.text("REQUIREMENTS SUMMARY", pageWidth / 2, 110, { align: "center" });
+
       const imgProps = pdf.getImageProperties(imgData);
       const pdfWidth = pdf.internal.pageSize.getWidth() - 60;
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
@@ -260,43 +256,54 @@ const RequirementsTable = ({
     }
   };
 
-  // --- render
   return (
-    <div className="requirements-container">
-      <div className="debug-info">
-        {/* Visible debug box — remove in production when fixed */}
-        <strong>Debug:</strong> totalSelectedCount = {totalSelectedCount}
+    <div style={inlineStyles.container}>
+      {/* DEBUG — remove when fixed */}
+      <div style={inlineStyles.debugBox}>
+        <strong>Debug props (visible on page):</strong>
+        <div style={{ marginTop: 6 }}>
+          <pre style={{ margin: 0, fontSize: 12 }}>
+            {JSON.stringify(
+              {
+                totalSelectedCount,
+                selectedPlatformsLen: Array.isArray(selectedPlatforms) ? selectedPlatforms.length : "not-array",
+                selectedSizesLen: Array.isArray(selectedSizes) ? selectedSizes.length : "not-array",
+                selectedUisLen: Array.isArray(selectedUis) ? selectedUis.length : "not-array",
+                selectedApisLen: Array.isArray(selectedApis) ? selectedApis.length : "not-array",
+              },
+              null,
+              2
+            )}
+          </pre>
+        </div>
       </div>
 
-      <div
-        className="requirements-table"
-        ref={tableRef}
-        style={{ display: "block", position: "relative", zIndex: 5 }}
-      >
-        <table>
+      {/* Requirements table (always rendered; inline styles avoid CSS hiding) */}
+      <div ref={tableRef} style={inlineStyles.tableWrap} className="requirements-table">
+        <table style={inlineStyles.table}>
           <thead>
             <tr>
-              <th>Requirement Questions</th>
-              <th>Selected Specifications</th>
-              <th>Total Price</th>
+              <th style={inlineStyles.thtd}>Requirement Questions</th>
+              <th style={inlineStyles.thtd}>Selected Specifications</th>
+              <th style={inlineStyles.thtd}>Total Price</th>
             </tr>
           </thead>
           <tbody>
             {requirements.map((req) => (
               <tr key={req.id}>
-                <td data-label="Requirement Questions">{req.name}</td>
-                <td data-label="Selected Specifications">
+                <td style={inlineStyles.thtd}>{req.name}</td>
+                <td style={inlineStyles.thtd}>
                   {Array.isArray(req.items) && req.items.length > 0
-                    ? req.items.map((item) => item.name).join(", ")
+                    ? req.items.map((it) => it.name).join(", ")
                     : "None selected"}
                 </td>
-                <td data-label="Total Price">{getTotalPrice(req.items)}</td>
+                <td style={inlineStyles.thtd}>{getTotalPrice(req.items)}</td>
               </tr>
             ))}
             <tr>
-              <td />
-              <td style={{ fontWeight: "bold" }}>Grand Total</td>
-              <td style={{ fontWeight: "bold" }}>
+              <td style={inlineStyles.thtd} />
+              <td style={{ ...inlineStyles.thtd, fontWeight: 700 }}>Grand Total</td>
+              <td style={{ ...inlineStyles.thtd, fontWeight: 700 }}>
                 {requirements.reduce((acc, r) => acc + getTotalPrice(r.items), 0)}
               </td>
             </tr>
@@ -304,46 +311,71 @@ const RequirementsTable = ({
         </table>
       </div>
 
-      {!hasSelections && (
-        <p className="info-text">⚠️ Please select at least one requirement to proceed.</p>
-      )}
+      {!hasSelections && <p style={inlineStyles.infoText}>⚠️ Please select at least one requirement to proceed.</p>}
 
-      <div className={form-wrapper ${!hasSelections ? "disabled" : ""}}>
+      <div style={inlineStyles.formWrapper} className={!hasSelections ? "disabled" : ""}>
         <form onSubmit={handleSendPdf} noValidate>
           <fieldset disabled={!hasSelections} style={{ border: "none", padding: 0 }}>
-            <label htmlFor="name">Your Name</label>
-            <input id="name" name="name" type="text" placeholder="Enter your name" value={formData.name} onChange={handleInputChange} />
-            {errors.name && <p className="error-text">{errors.name}</p>}
+            <div style={{ marginBottom: 8 }}>
+              <label htmlFor="name">Your Name</label>
+              <input id="name" name="name" style={inlineStyles.input} value={formData.name} onChange={handleInputChange} />
+              {errors.name && <div style={inlineStyles.error}>{errors.name}</div>}
+            </div>
 
-            <label htmlFor="email">Your Email</label>
-            <input id="email" name="email" type="email" placeholder="Enter your email (e.g. akhila@gmail.com)" value={formData.email} onChange={handleInputChange} />
-            {errors.email && <p className="error-text">{errors.email}</p>}
+            <div style={{ marginBottom: 8 }}>
+              <label htmlFor="email">Your Email</label>
+              <input id="email" name="email" style={inlineStyles.input} value={formData.email} onChange={handleInputChange} />
+              {errors.email && <div style={inlineStyles.error}>{errors.email}</div>}
+            </div>
 
-            <label htmlFor="phone">Your Phone</label>
-            <input id="phone" name="phone" type="tel" placeholder="Enter your 10-digit number" value={formData.phone} onChange={handleInputChange} />
-            {errors.phone && <p className="error-text">{errors.phone}</p>}
+            <div style={{ marginBottom: 8 }}>
+              <label htmlFor="phone">Your Phone</label>
+              <input id="phone" name="phone" style={inlineStyles.input} value={formData.phone} onChange={handleInputChange} />
+              {errors.phone && <div style={inlineStyles.error}>{errors.phone}</div>}
+            </div>
 
-            <label htmlFor="message">Your Message (optional)</label>
-            <textarea id="message" name="message" placeholder="Write your message" value={formData.message} onChange={handleInputChange} />
+            <div style={{ marginBottom: 8 }}>
+              <label htmlFor="message">Your Message (optional)</label>
+              <textarea id="message" name="message" style={inlineStyles.textarea} value={formData.message} onChange={handleInputChange} />
+            </div>
 
-            <button type="submit" disabled={!hasSelections || loading}>
+            <button type="submit" style={inlineStyles.button} disabled={!hasSelections || loading}>
               {loading ? "Sending..." : "Send PDF to Email"}
             </button>
           </fieldset>
         </form>
 
-        {!hasSelections && (
-          <div className="form-overlay">
-            <div>Please make at least one selection above to enable the form.</div>
-          </div>
-        )}
+        {!hasSelections && <div style={inlineStyles.overlay}>Please make at least one selection above to enable the form.</div>}
       </div>
 
       {statusMessage && (
-        <p className={status-message ${statusMessage.startsWith("✅") ? "success-text" : "error-text"}}>{statusMessage}</p>
+        <div style={{ ...inlineStyles.status, color: statusMessage.startsWith("✅") ? "green" : "red" }}>{statusMessage}</div>
       )}
     </div>
   );
 };
 
 export default RequirementsTable;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
