@@ -27,7 +27,7 @@ const RequirementsTable = ({
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
 
-  // ✅ Calculate total price
+  // ✅ Helper to calculate total price
   const getTotalPrice = (array) => {
     if (!array || array.length === 0) return 0;
     return array.reduce((acc, item) => acc + item.price, 0);
@@ -47,16 +47,16 @@ const RequirementsTable = ({
     { id: 11, name: "Security", items: selectedSecurity },
   ];
 
-  // ✅ Input change
+  // ✅ Handle input changes & clear errors
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: "" }); // clear errors when typing
+    setErrors({ ...errors, [e.target.name]: "" });
   };
 
-  // ✅ Validation (returns boolean)
+  // ✅ Validate all fields
   const validateForm = () => {
     const { name, email, phone } = formData;
-    let newErrors = {};
+    const newErrors = {};
 
     const nameRegex = /^[A-Za-z\s]+$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/;
@@ -75,18 +75,22 @@ const RequirementsTable = ({
       newErrors.phone = "Enter a valid 10-digit number.";
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return Object.keys(newErrors).length === 0; // ✅ return true only if valid
   };
 
-  // ✅ Send PDF (only after validation)
+  // ✅ Send PDF (only after passing validation)
   const handleSendPdf = async () => {
     const isValid = validateForm();
-    if (!isValid) return; // ⛔ Stop immediately if invalid
+    if (!isValid) {
+      setStatusMessage("⚠️ Please fix the errors above before submitting.");
+      return; // ⛔ STOP: Do not hit backend
+    }
 
     setLoading(true);
     setStatusMessage("📤 Sending email... Please wait.");
 
     try {
+      // generate PDF
       const input = tableRef.current;
       const canvas = await html2canvas(input, { scale: 3, useCORS: true });
       const imgData = canvas.toDataURL("image/png");
@@ -94,7 +98,6 @@ const RequirementsTable = ({
 
       await addStyledHeader(pdf);
       const pageWidth = pdf.internal.pageSize.getWidth();
-
       pdf.setFont("helvetica", "bold");
       pdf.setFontSize(16);
       pdf.text("REQUIREMENTS SUMMARY", pageWidth / 2, 110, { align: "center" });
@@ -103,9 +106,9 @@ const RequirementsTable = ({
       const pdfWidth = pdf.internal.pageSize.getWidth() - 60;
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
       pdf.addImage(imgData, "PNG", 30, 130, pdfWidth, pdfHeight);
-
       addStyledFooter(pdf, 130 + pdfHeight);
 
+      // prepare data
       const pdfBlob = pdf.output("blob");
       const formDataToSend = new FormData();
       formDataToSend.append("email", formData.email);
@@ -114,6 +117,7 @@ const RequirementsTable = ({
       formDataToSend.append("phone", formData.phone);
       formDataToSend.append("message", formData.message);
 
+      // send backend request
       const res = await fetch("https://app.aspireths.com/send-pdf", {
         method: "POST",
         body: formDataToSend,
@@ -133,7 +137,7 @@ const RequirementsTable = ({
     }
   };
 
-  // ✅ Header design
+  // ✅ Styled header
   const addStyledHeader = (pdf) => {
     return new Promise((resolve) => {
       const logoUrl = "/AspireLogo.png";
@@ -158,7 +162,7 @@ const RequirementsTable = ({
     });
   };
 
-  // ✅ Footer design
+  // ✅ Styled footer
   const addStyledFooter = (pdf, tableBottomY) => {
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
@@ -184,6 +188,7 @@ const RequirementsTable = ({
 
   return (
     <div className="requirements-container">
+      {/* ✅ Requirements Summary Table */}
       <div className="requirements-table" ref={tableRef}>
         <table>
           <thead>
@@ -209,6 +214,7 @@ const RequirementsTable = ({
         </table>
       </div>
 
+      {/* ✅ User Info Form */}
       <form className="user-form" noValidate>
         <h3>Where should we send you the detailed estimate?</h3>
 
@@ -258,7 +264,17 @@ const RequirementsTable = ({
           {loading ? "Sending..." : "Send PDF to Email"}
         </button>
 
-        {statusMessage && <p className="status-message">{statusMessage}</p>}
+        {statusMessage && (
+          <p
+            className={`status-message ${
+              statusMessage.startsWith("⚠️") || statusMessage.startsWith("❌")
+                ? "error-text"
+                : "success-text"
+            }`}
+          >
+            {statusMessage}
+          </p>
+        )}
       </form>
     </div>
   );
