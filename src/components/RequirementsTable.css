@@ -1,141 +1,280 @@
-/* RequirementsTable.css - full rewrite for two-panel layout */
-
-/* Container */
-.rtc-container {
-  max-width: 1100px;
-  margin: 18px auto;
-  padding: 12px;
-  font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  color: #1f2937;
+/* ===================== WRAPPER ===================== */
+.table-form-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 40px auto;
+  gap: 25px;
+  font-family: "Poppins", sans-serif;
 }
 
-/* Two-column responsive grid */
-.rtc-grid {
-  display: grid;
-  grid-template-columns: 1fr 380px; /* left flexible, right fixed*/
-  gap: 18px;
-  align-items: start;
-}
-
-/* Panels */
-.rtc-panel {
+/* ===================== TABLE CONTAINER ===================== */
+.requirements-table-container {
+  width: 90%;
+  max-width: 850px;
   background: #ffffff;
-  border-radius: 10px;
-  padding: 14px;
-  box-shadow: 0 6px 18px rgba(16, 24, 40, 0.04);
-  position: relative;
+  padding: 25px;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  text-align: left;
+  transition: transform 0.2s ease-in-out;
 }
 
-/* Titles */
-.rtc-title {
-  margin: 0 0 10px 0;
-  font-size: 1.05rem;
+.requirements-table-container:hover {
+  transform: scale(1.01);
+}
+
+.requirements-table-container h3 {
+  text-align: center;
+  color: #1e3a8a;
+  margin-bottom: 20px;
   font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* ===================== TABLE ===================== */
+.requirements-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  color: #334155;
+}
+
+.requirements-table th,
+.requirements-table td {
+  padding: 14px;
+  border: 1px solid #e2e8f0;
+  vertical-align: top;
+}
+
+.requirements-table th {
+  background-color: #3b82f6;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.requirements-table tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+.requirements-table tr:hover {
+  background-color: #eff6ff;
+}
+
+/* Items Row */
+.item-row td {
+  background-color: #f8fafc;
+}
+
+/* Price Row */
+.price-row td {
+  background-color: #f1f5f9;
+  font-weight: 600;
   color: #0f172a;
 }
 
-/* Table styles */
-.rtc-table-wrap { overflow: auto; border-radius: 8px; }
-.rtc-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 480px;
-}
-.rtc-table th,
-.rtc-table td {
-  padding: 10px 12px;
-  border: 1px solid #eef2f7;
-  text-align: left;
-  background: #fff;
-  font-size: 0.95rem;
-}
-.rtc-table thead th {
-  background: #f8fafc;
+/* Grand Total Row */
+.grand-total-row td {
+  background-color: #dbeafe;
   font-weight: 700;
-}
-.rtc-grand-total td {
-  background: #fafafa;
+  color: #1e40af;
+  border-top: 2px solid #3b82f6;
 }
 
-/* Actions area under the table */
-.rtc-actions {
-  margin-top: 12px;
+/* Inline Items Styling */
+.inline-items {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   gap: 8px;
 }
-.rtc-note {
-  margin: 0;
-  color: #6b7280;
-  font-size: 0.9rem;
+
+.item-chip {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  border-radius: 16px;
+  padding: 5px 10px;
+  font-size: 13px;
+  font-weight: 500;
 }
 
-/* Buttons */
-.rtc-btn {
-  border: none;
+/* ===================== FORM ===================== */
+.user-form {
+  width: 90%;
+  max-width: 850px;
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.user-form h3 {
+  text-align: center;
+  color: #1e3a8a;
+  margin-bottom: 25px;
+  font-weight: 700;
+}
+
+.user-form label {
+  display: block;
+  margin-top: 12px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.user-form input,
+.user-form textarea {
+  width: 100%;
   padding: 10px 12px;
+  margin-top: 6px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+}
+
+.user-form input:focus,
+.user-form textarea:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.user-form button {
+  width: 100%;
+  margin-top: 22px;
+  padding: 12px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.1s;
+}
+
+.user-form button:hover {
+  background-color: #2563eb;
+  transform: scale(1.02);
+}
+
+.status-message {
+  text-align: center;
+  color: #16a34a;
+  font-weight: 500;
+  margin-top: 12px;
+}
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 700px) {
+  .requirements-table-container,
+  .user-form {
+    width: 95%;
+    padding: 18px;
+  }
+
+  .requirements-table th,
+  .requirements-table td {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  .item-chip {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+}
+
+
+
+
+.user-form {
+  max-width: 500px;
+  margin: 30px auto;
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-form h3 {
+  text-align: center;
+  color: #1e40af;
+  margin-bottom: 20px;
+}
+
+.user-form label {
+  display: block;
+  margin: 10px 0 5px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.user-form input,
+.user-form textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.user-form input:focus,
+.user-form textarea:focus {
+  border-color: #3b82f6;
+  outline: none;
+}
+
+.user-form button {
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px;
+  background-color: #3b82f6;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-weight: 600;
-}
-.rtc-btn-primary {
-  background: #0b74de;
-  color: #fff;
-}
-.rtc-btn[disabled] {
-  opacity: 0.6;
-  cursor: not-allowed;
+  transition: background 0.3s ease;
 }
 
-/* Form inside right panel */
-.rtc-form { display: block; }
-.rtc-fieldset { border: 0; padding: 0; margin: 0; }
-.rtc-label {
-  display: block;
+.user-form button:hover {
+  background-color: #2563eb;
+}
+
+/* ----------- Status Message ----------- */
+.status-message {
+  text-align: center;
   margin-top: 10px;
-  font-size: 0.9rem;
-  color: #374151;
-}
-.rtc-input,
-.rtc-textarea {
-  width: 100%;
-  margin-top: 6px;
-  padding: 9px 10px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  font-size: 0.95rem;
-  box-sizing: border-box;
-}
-.rtc-textarea { min-height: 90px; resize: vertical; }
-.rtc-input-error { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,0.06); }
-.rtc-error { color: #ef4444; margin-top: 6px; font-size: 0.88rem; }
-
-/* Overlay when form disabled but visible */
-.rtc-overlay {
-  position: absolute;
-  right: 14px;
-  left: 14px;
-  top: 14px;
-  bottom: 14px;
-  background: rgba(255,255,255,0.85);
-  border-radius: 10px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color: #374151;
-  font-weight: 600;
-  pointer-events: none;
-  z-index: 8;
+  font-weight: 500;
+  color: #1e40af;
 }
 
-/* Status messages */
-.rtc-status { margin-top: 12px; font-weight: 600; }
-.rtc-status-success { color: #059669; }
-.rtc-status-error { color: #ef4444; }
+/* ----------- Mobile Responsiveness ----------- */
+@media (max-width: 600px) {
+  .user-form {
+    width: 90%;
+    padding: 15px;
+  }
 
-/* Responsive: stack columns under 920px */
-@media (max-width: 920px) {
-  .rtc-grid { grid-template-columns: 1fr; }
-  .rtc-panel { padding: 12px; }
-  .rtc-overlay { left: 12px; right: 12px; top: 12px; bottom: 12px; }
+  .user-form input,
+  .user-form textarea {
+    font-size: 13px;
+  }
+
+  .user-form button {
+    font-size: 14px;
+    padding: 10px;
+  }
+}
+.grand-total-row {
+  background-color: #f8f9fa;
+  border-top: 2px solid #333;
+}
+.grand-total-row td {
+  padding: 10px;
+  width:280px;
 }
