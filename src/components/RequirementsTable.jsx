@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import "./RequirementsTable.css"; // ✅ external stylesheet
+import "./RequirementsTable.css";
 
 const RequirementsTable = ({
   selectedPlatforms,
@@ -23,9 +23,10 @@ const RequirementsTable = ({
     phone: "",
     message: "",
   });
-  const [loading, setLoading] = useState(false); // ✅ to track email sending status
-  const [statusMessage, setStatusMessage] = useState(""); // ✅ feedback message
+  const [loading, setLoading] = useState(false);
+  const [statusMessage, setStatusMessage] = useState("");
 
+  // ✅ helper: calculate total price
   const getTotalPrice = (array) => {
     if (!array || array.length === 0) return 0;
     return array.reduce((acc, item) => acc + item.price, 0);
@@ -54,14 +55,37 @@ const RequirementsTable = ({
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSendPdf = async () => {
-    const { name, email, phone, message } = formData;
-    if (!email || !name || !phone) {
-      alert("Please fill all required fields.");
-      return;
-    }
+  // ✅ Validation helper
+  const validateForm = () => {
+    const { name, email, phone } = formData;
 
-    setLoading(true); // ✅ show sending state
+    const nameRegex = /^[A-Za-z\s]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[0-9]{10}$/;
+
+    if (!name || !email || !phone) {
+      alert("Please fill all required fields.");
+      return false;
+    }
+    if (!nameRegex.test(name)) {
+      alert("Please enter a valid name (letters and spaces only).");
+      return false;
+    }
+    if (!emailRegex.test(email)) {
+      alert("Please enter a valid email address (e.g., akhila@gmail.com).");
+      return false;
+    }
+    if (!phoneRegex.test(phone)) {
+      alert("Please enter a valid 10-digit phone number.");
+      return false;
+    }
+    return true;
+  };
+
+  const handleSendPdf = async () => {
+    if (!validateForm()) return;
+
+    setLoading(true);
     setStatusMessage("📤 Sending email... Please wait.");
 
     try {
@@ -85,32 +109,17 @@ const RequirementsTable = ({
 
       const pdfBlob = pdf.output("blob");
       const formDataToSend = new FormData();
-      formDataToSend.append("email", email);
+      formDataToSend.append("email", formData.email);
       formDataToSend.append("pdf", pdfBlob, "requirements-summary.pdf");
-      formDataToSend.append("name", name);
-      formDataToSend.append("phone", phone);
-      formDataToSend.append("message", message);
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("phone", formData.phone);
+      formDataToSend.append("message", formData.message);
 
-      // const res = await fetch("https://app.aspireths.com/send-pdf", {
-      //   method: "POST",
-      //   body: formDataToSend,
-      // });
-    app.post("/send-pdf", async (req, res) =>{
-      const { name, email, requirements } = req.body;
-      const doc = new PDFDocument();
-      const pdfBuffer = await new Promise((resolve) =>{
-        const chunks  = [];
-        doc.on("data", chunks.push.bind((chunks));
-        doc.on("end", () => resolve(Buffer.concat(chunks)));
-        doc.text(`Name: ${name} `);
-        doc.text(JSON.stringify(requirements, null, 2));
-        doc.end();
+      const res = await fetch("https://app.aspireths.com/send-pdf", {
+        method: "POST",
+        body: formDataToSend,
       });
 
-      res.json({ message: "PDF generated and sent successfully!"});
-    });
-
-      
       const data = await res.json();
       if (res.ok) {
         setStatusMessage("✅ Email sent successfully!");
@@ -121,7 +130,7 @@ const RequirementsTable = ({
       console.error(err);
       setStatusMessage("❌ Error generating or sending PDF.");
     } finally {
-      setLoading(false); // ✅ stop loading
+      setLoading(false);
     }
   };
 
@@ -142,7 +151,7 @@ const RequirementsTable = ({
         pdf.text("ASPIRE TEKHUB SOLUTIONS", 90, 35);
         pdf.setFontSize(10);
         const currentDate = new Date().toLocaleDateString();
-        pdf.text(`Date: ${currentDate}`, pageWidth - 120, 35);
+        pdf.text(Date: ${currentDate}, pageWidth - 120, 35);
         pdf.setTextColor(0, 0, 0);
         resolve();
       };
@@ -218,7 +227,7 @@ const RequirementsTable = ({
           id="email"
           type="email"
           name="email"
-          placeholder="Enter your email"
+          placeholder="Enter your email (e.g. akhila@gmail.com)"
           value={formData.email}
           onChange={handleInputChange}
           required
@@ -229,7 +238,7 @@ const RequirementsTable = ({
           id="phone"
           type="tel"
           name="phone"
-          placeholder="Enter your phone number"
+          placeholder="Enter your 10-digit number"
           value={formData.phone}
           onChange={handleInputChange}
           required
@@ -248,7 +257,6 @@ const RequirementsTable = ({
           {loading ? "Sending..." : "Send PDF to Email"}
         </button>
 
-        {/* ✅ Show status below the button */}
         {statusMessage && <p className="status-message">{statusMessage}</p>}
       </form>
     </div>
