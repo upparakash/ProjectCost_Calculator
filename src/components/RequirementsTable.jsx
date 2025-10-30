@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import "../styles/RequirementsTable.css";
+import "./RequirementsTable.css";
 
 const RequirementsTable = ({
   selectedPlatforms,
