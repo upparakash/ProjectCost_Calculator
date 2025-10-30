@@ -26,7 +26,7 @@ const RequirementsTable = ({
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
 
-  // ✅ helper: calculate total price
+  // ✅ Helper to calculate total price
   const getTotalPrice = (array) => {
     if (!array || array.length === 0) return 0;
     return array.reduce((acc, item) => acc + item.price, 0);
@@ -51,41 +51,44 @@ const RequirementsTable = ({
     0
   );
 
+  // ✅ Input change handler
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-// ✅ Stronger validation function
-const validateForm = () => {
-  const { name, email, phone } = formData;
 
-  const nameRegex = /^[A-Za-z\s]+$/;
-  // Require at least one dot, and TLD between 2–4 letters (so .co is invalid)
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[A-Za-z]{3,4}$/;
-  // Exactly 10 digits only
-  const phoneRegex = /^\d{10}$/;
+  // ✅ Strong front-end validation
+  const validateForm = () => {
+    const { name, email, phone } = formData;
 
-  if (!name || !email || !phone) {
-    alert("Please fill all required fields.");
-    return false;
-  }
-  if (!nameRegex.test(name)) {
-    alert("Please enter a valid name (letters and spaces only).");
-    return false;
-  }
-  if (!emailRegex.test(email)) {
-    alert("Please enter a valid email (e.g., akhila@gmail.com).");
-    return false;
-  }
-  if (!phoneRegex.test(phone)) {
-    alert("Please enter a valid 10-digit phone number.");
-    return false;
-  }
+    const nameRegex = /^[A-Za-z\s]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/; // must end with 2+ letters
+    const phoneRegex = /^\d{10}$/; // exactly 10 digits
 
-  return true;
-};
+    if (!name || !email || !phone) {
+      alert("⚠️ Please fill all required fields.");
+      return false;
+    }
+    if (!nameRegex.test(name)) {
+      alert("⚠️ Please enter a valid name (letters and spaces only).");
+      return false;
+    }
+    if (!emailRegex.test(email)) {
+      alert("⚠️ Please enter a valid email (e.g., akhila@gmail.com).");
+      return false;
+    }
+    if (!phoneRegex.test(phone)) {
+      alert("⚠️ Please enter a valid 10-digit phone number.");
+      return false;
+    }
 
+    return true;
+  };
+
+  // ✅ Main function to generate and send PDF
   const handleSendPdf = async () => {
-    if (!validateForm()) return;
+    // Run validation first
+    const isValid = validateForm();
+    if (!isValid) return; // ⛔ stop here if invalid
 
     setLoading(true);
     setStatusMessage("📤 Sending email... Please wait.");
@@ -98,6 +101,7 @@ const validateForm = () => {
 
       await addStyledHeader(pdf);
       const pageWidth = pdf.internal.pageSize.getWidth();
+
       pdf.setFont("helvetica", "bold");
       pdf.setFontSize(16);
       pdf.text("REQUIREMENTS SUMMARY", pageWidth / 2, 110, { align: "center" });
@@ -126,7 +130,7 @@ const validateForm = () => {
       if (res.ok) {
         setStatusMessage("✅ Email sent successfully!");
       } else {
-        setStatusMessage("❌ Failed to send email: " + data.error);
+        setStatusMessage("❌ Failed to send email: " + (data.error || "Unknown error"));
       }
     } catch (err) {
       console.error(err);
@@ -136,6 +140,7 @@ const validateForm = () => {
     }
   };
 
+  // ✅ Styled header
   const addStyledHeader = (pdf) => {
     return new Promise((resolve) => {
       const logoUrl = "/AspireLogo.png";
@@ -160,6 +165,7 @@ const validateForm = () => {
     });
   };
 
+  // ✅ Styled footer
   const addStyledFooter = (pdf, tableBottomY) => {
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
@@ -264,5 +270,6 @@ const validateForm = () => {
     </div>
   );
 };
+
 
 export default RequirementsTable;
