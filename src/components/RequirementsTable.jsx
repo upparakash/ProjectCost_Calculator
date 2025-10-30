@@ -1,8 +1,7 @@
-// RequirementsTable.jsx
-import React, { useRef, useState, useMemo } from "react";
+import React, { useRef, useState, useMemo, useEffect } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import "../styles//RequirementsTable.css";
+import "./RequirementsTable.css";
 
 const RequirementsTable = ({
   selectedPlatforms = [],
@@ -28,7 +27,7 @@ const RequirementsTable = ({
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
 
-  // --- compute total selections (robust: handles undefined/non-array props)
+  // --- compute total selections
   const totalSelectedCount = useMemo(() => {
     const all = [
       selectedPlatforms,
@@ -61,9 +60,39 @@ const RequirementsTable = ({
     selectedSecurity,
   ]);
 
-  const hasSelections = totalSelectedCount > 0; // => disable when false
+  const hasSelections = totalSelectedCount > 0;
 
-  // --- price helpers & requirements list (for table)
+  // --- debug logging to console (visible on Vercel)
+  useEffect(() => {
+    console.log("RequirementsTable mounted/updated:");
+    console.log("selectedPlatforms:", selectedPlatforms);
+    console.log("selectedSizes:", selectedSizes);
+    console.log("selectedUis:", selectedUis);
+    console.log("selectedUsers:", selectedUsers);
+    console.log("selectedGenerators:", selectedGenerators);
+    console.log("selectedDates:", selectedDates);
+    console.log("selectedEngagement:", selectedEngagement);
+    console.log("selectedBilling:", selectedBilling);
+    console.log("selectedAdmins:", selectedAdmins);
+    console.log("selectedApis:", selectedApis);
+    console.log("selectedSecurity:", selectedSecurity);
+    console.log("totalSelectedCount:", totalSelectedCount);
+  }, [
+    selectedPlatforms,
+    selectedSizes,
+    selectedUis,
+    selectedUsers,
+    selectedGenerators,
+    selectedDates,
+    selectedEngagement,
+    selectedBilling,
+    selectedAdmins,
+    selectedApis,
+    selectedSecurity,
+    totalSelectedCount,
+  ]);
+
+  // --- helpers
   const getTotalPrice = (array) => {
     if (!Array.isArray(array) || array.length === 0) return 0;
     return array.reduce((acc, item) => acc + (Number(item.price) || 0), 0);
@@ -83,7 +112,7 @@ const RequirementsTable = ({
     { id: 11, name: "Security", items: selectedSecurity },
   ];
 
-  // --- form handlers
+  // --- form handlers (unchanged)
   const handleInputChange = (e) => {
     setFormData((p) => ({ ...p, [e.target.name]: e.target.value }));
     setErrors((p) => ({ ...p, [e.target.name]: "" }));
@@ -111,8 +140,7 @@ const RequirementsTable = ({
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
-  // --- PDF header/footer helpers
+// --- header/footer helpers (unchanged)
   const addStyledHeader = (pdf) =>
     new Promise((resolve) => {
       const logoUrl = "/AspireLogo.png";
@@ -127,7 +155,6 @@ const RequirementsTable = ({
         try {
           pdf.addImage(logoImg, "PNG", 40, 10, 40, 40);
         } catch (err) {
-          // if image fails, ignore and continue
           console.warn("logo addImage failed", err);
         }
         pdf.setFontSize(16);
@@ -139,7 +166,6 @@ const RequirementsTable = ({
         pdf.setTextColor(0, 0, 0);
         resolve();
       };
-      // in case image load fails quickly
       logoImg.onerror = () => resolve();
     });
 
@@ -166,16 +192,13 @@ const RequirementsTable = ({
     );
   };
 
-  // --- main submit (validate first, and also ensure hasSelections)
+  // --- main submit
   const handleSendPdf = async (e) => {
     e.preventDefault();
-
-    // ensure selections exist on submit
     if (!hasSelections) {
       setStatusMessage("⚠️ Please select at least one requirement before sending.");
       return;
     }
-
     const isValid = validateForm();
     if (!isValid) {
       setStatusMessage("⚠️ Please fix the errors above before submitting.");
@@ -186,7 +209,6 @@ const RequirementsTable = ({
     setStatusMessage("📤 Sending email... Please wait.");
 
     try {
-      // create PDF from tableRef
       const input = tableRef.current;
       const canvas = await html2canvas(input, { scale: 3, useCORS: true });
       const imgData = canvas.toDataURL("image/png");
@@ -197,14 +219,12 @@ const RequirementsTable = ({
       pdf.setFont("helvetica", "bold");
       pdf.setFontSize(16);
       pdf.text("REQUIREMENTS SUMMARY", pageWidth / 2, 110, { align: "center" });
-
       const imgProps = pdf.getImageProperties(imgData);
       const pdfWidth = pdf.internal.pageSize.getWidth() - 60;
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
       pdf.addImage(imgData, "PNG", 30, 130, pdfWidth, pdfHeight);
       addStyledFooter(pdf, 130 + pdfHeight);
 
-      // prepare form data and call backend
       const pdfBlob = pdf.output("blob");
       const formDataToSend = new FormData();
       formDataToSend.append("email", formData.email);
@@ -218,12 +238,10 @@ const RequirementsTable = ({
         body: formDataToSend,
       });
 
-      // safe JSON parse
       let data = {};
       try {
         data = await res.json();
       } catch {
-        // non-json body
         const text = await res.text();
         console.error("Non-JSON response:", text);
       }
@@ -245,7 +263,16 @@ const RequirementsTable = ({
   // --- render
   return (
     <div className="requirements-container">
-      <div className="requirements-table" ref={tableRef}>
+      <div className="debug-info">
+        {/* Visible debug box — remove in production when fixed */}
+        <strong>Debug:</strong> totalSelectedCount = {totalSelectedCount}
+      </div>
+
+      <div
+        className="requirements-table"
+        ref={tableRef}
+        style={{ display: "block", position: "relative", zIndex: 5 }}
+      >
         <table>
           <thead>
             <tr>
@@ -277,56 +304,27 @@ const RequirementsTable = ({
         </table>
       </div>
 
-      {/* Info when nothing selected */}
       {!hasSelections && (
         <p className="info-text">⚠️ Please select at least one requirement to proceed.</p>
       )}
 
-      {/* Form area */}
       <div className={form-wrapper ${!hasSelections ? "disabled" : ""}}>
         <form onSubmit={handleSendPdf} noValidate>
           <fieldset disabled={!hasSelections} style={{ border: "none", padding: 0 }}>
             <label htmlFor="name">Your Name</label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              placeholder="Enter your name"
-              value={formData.name}
-              onChange={handleInputChange}
-            />
+            <input id="name" name="name" type="text" placeholder="Enter your name" value={formData.name} onChange={handleInputChange} />
             {errors.name && <p className="error-text">{errors.name}</p>}
 
             <label htmlFor="email">Your Email</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="Enter your email (e.g. akhila@gmail.com)"
-              value={formData.email}
-              onChange={handleInputChange}
-            />
+            <input id="email" name="email" type="email" placeholder="Enter your email (e.g. akhila@gmail.com)" value={formData.email} onChange={handleInputChange} />
             {errors.email && <p className="error-text">{errors.email}</p>}
 
             <label htmlFor="phone">Your Phone</label>
-            <input
-              id="phone"
-              name="phone"
-              type="tel"
-              placeholder="Enter your 10-digit number"
-              value={formData.phone}
-              onChange={handleInputChange}
-            />
+            <input id="phone" name="phone" type="tel" placeholder="Enter your 10-digit number" value={formData.phone} onChange={handleInputChange} />
             {errors.phone && <p className="error-text">{errors.phone}</p>}
 
             <label htmlFor="message">Your Message (optional)</label>
-            <textarea
-              id="message"
-              name="message"
-              placeholder="Write your message"
-              value={formData.message}
-              onChange={handleInputChange}
-            />
+            <textarea id="message" name="message" placeholder="Write your message" value={formData.message} onChange={handleInputChange} />
 
             <button type="submit" disabled={!hasSelections || loading}>
               {loading ? "Sending..." : "Send PDF to Email"}
@@ -334,7 +332,6 @@ const RequirementsTable = ({
           </fieldset>
         </form>
 
-        {/* overlay for clarity when disabled */}
         {!hasSelections && (
           <div className="form-overlay">
             <div>Please make at least one selection above to enable the form.</div>
@@ -343,9 +340,7 @@ const RequirementsTable = ({
       </div>
 
       {statusMessage && (
-        <p className={status-message ${statusMessage.startsWith("✅") ? "success-text" : "error-text"}}>
-          {statusMessage}
-        </p>
+        <p className={status-message ${statusMessage.startsWith("✅") ? "success-text" : "error-text"}}>{statusMessage}</p>
       )}
     </div>
   );
