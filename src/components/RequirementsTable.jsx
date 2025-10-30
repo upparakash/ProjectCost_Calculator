@@ -1,21 +1,20 @@
-// RequirementsTable.jsx
-import React, { useRef, useState, useMemo } from "react";
+import React, { useRef, useState } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import "./RequirementsTable.css";
 
 const RequirementsTable = ({
-  selectedPlatforms = [],
-  selectedSizes = [],
-  selectedUis = [],
-  selectedUsers = [],
-  selectedGenerators = [],
-  selectedDates = [],
-  selectedEngagement = [],
-  selectedBilling = [],
-  selectedAdmins = [],
-  selectedApis = [],
-  selectedSecurity = [],
+  selectedPlatforms,
+  selectedSizes,
+  selectedUis,
+  selectedUsers,
+  selectedGenerators,
+  selectedDates,
+  selectedEngagement,
+  selectedBilling,
+  selectedAdmins,
+  selectedApis,
+  selectedSecurity,
 }) => {
   const tableRef = useRef();
   const [formData, setFormData] = useState({
@@ -25,40 +24,14 @@ const RequirementsTable = ({
     message: "",
   });
   const [errors, setErrors] = useState({});
-  const [statusMessage, setStatusMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [statusMessage, setStatusMessage] = useState("");
 
-  // Count selections robustly
-  const totalSelectedCount = useMemo(() => {
-    const arrays = [
-      selectedPlatforms,
-      selectedSizes,
-      selectedUis,
-      selectedUsers,
-      selectedGenerators,
-      selectedDates,
-      selectedEngagement,
-      selectedBilling,
-      selectedAdmins,
-      selectedApis,
-      selectedSecurity,
-    ];
-    return arrays.reduce((acc, arr) => (Array.isArray(arr) ? acc + arr.length : acc), 0);
-  }, [
-    selectedPlatforms,
-    selectedSizes,
-    selectedUis,
-    selectedUsers,
-    selectedGenerators,
-    selectedDates,
-    selectedEngagement,
-    selectedBilling,
-    selectedAdmins,
-    selectedApis,
-    selectedSecurity,
-  ]);
-
-  const hasSelections = totalSelectedCount > 0;
+  // ✅ Helper to calculate total price
+  const getTotalPrice = (array) => {
+    if (!array || array.length === 0) return 0;
+    return array.reduce((acc, item) => acc + item.price, 0);
+  };
 
   const requirements = [
     { id: 1, name: "Platform", items: selectedPlatforms },
@@ -74,143 +47,50 @@ const RequirementsTable = ({
     { id: 11, name: "Security", items: selectedSecurity },
   ];
 
-  const getTotalPrice = (arr) => {
-    if (!Array.isArray(arr) || arr.length === 0) return 0;
-    return arr.reduce((sum, it) => sum + (Number(it.price) || 0), 0);
-  };
-
-  // ---------- Form handling & validation ----------
+  // ✅ Handle input changes & clear errors
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((p) => ({ ...p, [name]: value }));
-    setErrors((p) => ({ ...p, [name]: "" }));
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" });
   };
 
+  // ✅ Validate all fields
   const validateForm = () => {
     const { name, email, phone } = formData;
     const newErrors = {};
+
     const nameRegex = /^[A-Za-z\s]+$/;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/; // requires tld length >=2
-    const phoneRegex = /^\d{10}$/; // exactly 10 digits
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/;
+    const phoneRegex = /^\d{10}$/;
 
     if (!name.trim()) newErrors.name = "Name is required.";
-    else if (!nameRegex.test(name)) newErrors.name = "Only letters and spaces allowed.";
+    else if (!nameRegex.test(name))
+      newErrors.name = "Only letters and spaces are allowed.";
 
     if (!email.trim()) newErrors.email = "Email is required.";
-    else if (!emailRegex.test(email)) newErrors.email = "Enter a valid email (e.g., akhila@gmail.com).";
+    else if (!emailRegex.test(email))
+      newErrors.email = "Enter a valid email (e.g., akhila@gmail.com).";
 
-    if (!phone.trim()) newErrors.phone = "Phone is required.";
-    else if (!phoneRegex.test(phone)) newErrors.phone = "Enter a valid 10-digit phone number.";
+    if (!phone.trim()) newErrors.phone = "Phone number is required.";
+    else if (!phoneRegex.test(phone))
+      newErrors.phone = "Enter a valid 10-digit number.";
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return Object.keys(newErrors).length === 0; // ✅ return true only if valid
   };
 
-  // ---------- PDF helpers ----------
-  const addStyledHeader = (pdf) =>
-    new Promise((resolve) => {
-      const logoUrl = "/AspireLogo.png";
-      const img = new Image();
-      img.crossOrigin = "Anonymous";
-      img.src = logoUrl;
-      img.onload = () => {
-        try {
-          const w = pdf.internal.pageSize.getWidth();
-          pdf.setFillColor(59, 130, 246);
-          pdf.rect(0, 0, w, 70, "F");
-          pdf.setTextColor(255, 255, 255);
-          pdf.addImage(img, "PNG", 40, 10, 40, 40);
-          pdf.setFont("helvetica", "bold");
-          pdf.setFontSize(16);
-          pdf.text("ASPIRE TEKHUB SOLUTIONS", 90, 35);
-          pdf.setFontSize(10);
-          const currentDate = new Date().toLocaleDateString();
-          pdf.text(Date: ${currentDate}, w - 120, 35);
-          pdf.setTextColor(0, 0, 0);
-        } catch {
-          // ignore image or layout errors
-        }
-        resolve();
-      };
-      img.onerror = () => resolve();
-    });
-
-  const addStyledFooter = (pdf, tableBottomY) => {
-    const w = pdf.internal.pageSize.getWidth();
-    const h = pdf.internal.pageSize.getHeight();
-    const footerY = Math.min(h - 70, tableBottomY + 20);
-    pdf.setFillColor(59, 130, 246);
-    pdf.rect(0, footerY, w, 60, "F");
-    pdf.setTextColor(255, 255, 255);
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(10);
-    pdf.text(
-      "Corporate Office: 1-8-303, 3rd Floor, VK Towers, SP Road, RasoolPura, Secunderabad - 500003",
-      w / 2,
-      footerY + 25,
-      { align: "center" }
-    );
-    pdf.text("040 4519 5642 | info@aspireths.com | www.aspireths.com", w / 2, footerY + 42, {
-      align: "center",
-    });
-  };
-
-// ---------- Actions ----------
-  // Generate PDF (left panel) — disabled when no selections
-  const handleGeneratePdf = async (e) => {
-    e.preventDefault();
-    if (!hasSelections) {
-      setStatusMessage("⚠️ Please select at least one requirement before generating PDF.");
-      return;
-    }
-
-    setStatusMessage("📤 Generating PDF...");
-    try {
-      const input = tableRef.current;
-      const canvas = await html2canvas(input, { scale: 3, useCORS: true });
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "pt", "a4");
-
-      await addStyledHeader(pdf);
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(16);
-      pdf.text("REQUIREMENTS SUMMARY", pageWidth / 2, 110, { align: "center" });
-
-      const imgProps = pdf.getImageProperties(imgData);
-      const pdfWidth = pdf.internal.pageSize.getWidth() - 60;
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-      pdf.addImage(imgData, "PNG", 30, 130, pdfWidth, pdfHeight);
-
-      addStyledFooter(pdf, 130 + pdfHeight);
-
-      // Download locally as preview (you can change behavior if you like)
-      pdf.save("requirements-summary.pdf");
-      setStatusMessage("✅ PDF generated (downloaded).");
-    } catch (err) {
-      console.error(err);
-      setStatusMessage("❌ Error generating PDF.");
-    }
-  };
-
-  // Send PDF to backend (right panel) — disabled when no selections or invalid fields
-  const handleSendPdf = async (e) => {
-    e.preventDefault();
-    if (!hasSelections) {
-      setStatusMessage("⚠️ Please select at least one requirement before sending.");
-      return;
-    }
-    const valid = validateForm();
-    if (!valid) {
-      setStatusMessage("⚠️ Please fix errors before sending.");
-      return;
+  // ✅ Send PDF (only after passing validation)
+  const handleSendPdf = async () => {
+    const isValid = validateForm();
+    if (!isValid) {
+      setStatusMessage("⚠️ Please fix the errors above before submitting.");
+      return; // ⛔ STOP: Do not hit backend
     }
 
     setLoading(true);
-    setStatusMessage("📤 Generating PDF & sending email...");
+    setStatusMessage("📤 Sending email... Please wait.");
 
     try {
-      // generate PDF blob
+      // generate PDF
       const input = tableRef.current;
       const canvas = await html2canvas(input, { scale: 3, useCORS: true });
       const imgData = canvas.toDataURL("image/png");
@@ -228,33 +108,26 @@ const RequirementsTable = ({
       pdf.addImage(imgData, "PNG", 30, 130, pdfWidth, pdfHeight);
       addStyledFooter(pdf, 130 + pdfHeight);
 
+      // prepare data
       const pdfBlob = pdf.output("blob");
+      const formDataToSend = new FormData();
+      formDataToSend.append("email", formData.email);
+      formDataToSend.append("pdf", pdfBlob, "requirements-summary.pdf");
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("phone", formData.phone);
+      formDataToSend.append("message", formData.message);
 
-      const payload = new FormData();
-      payload.append("email", formData.email);
-      payload.append("pdf", pdfBlob, "requirements-summary.pdf");
-      payload.append("name", formData.name);
-      payload.append("phone", formData.phone);
-      payload.append("message", formData.message || "");
-
+      // send backend request
       const res = await fetch("https://app.aspireths.com/send-pdf", {
         method: "POST",
-        body: payload,
+        body: formDataToSend,
       });
 
-      let data = {};
-      try {
-        data = await res.json();
-      } catch {
-        const text = await res.text().catch(() => "");
-        console.error("Non-JSON response:", text);
-      }
-
+      const data = await res.json();
       if (res.ok) {
         setStatusMessage("✅ Email sent successfully!");
-        setFormData({ name: "", email: "", phone: "", message: "" });
       } else {
-        setStatusMessage("❌ Failed to send email: " + (data.error || data.message || res.status));
+        setStatusMessage("❌ Failed to send email: " + (data.error || "Unknown error"));
       }
     } catch (err) {
       console.error(err);
@@ -264,145 +137,159 @@ const RequirementsTable = ({
     }
   };
 
-  // ---------- UI ----------
+  // ✅ Styled header
+  const addStyledHeader = (pdf) => {
+    return new Promise((resolve) => {
+      const logoUrl = "/AspireLogo.png";
+      const logoImg = new Image();
+      logoImg.crossOrigin = "Anonymous";
+      logoImg.src = logoUrl;
+      logoImg.onload = () => {
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        pdf.setFillColor(59, 130, 246);
+        pdf.rect(0, 0, pageWidth, 70, "F");
+        pdf.setTextColor(255, 255, 255);
+        pdf.addImage(logoImg, "PNG", 40, 10, 40, 40);
+        pdf.setFontSize(16);
+        pdf.setFont("helvetica", "bold");
+        pdf.text("ASPIRE TEKHUB SOLUTIONS", 90, 35);
+        pdf.setFontSize(10);
+        const currentDate = new Date().toLocaleDateString();
+        pdf.text(`Date: ${currentDate}`, pageWidth - 120, 35);
+        pdf.setTextColor(0, 0, 0);
+        resolve();
+      };
+    });
+  };
+
+  // ✅ Styled footer
+  const addStyledFooter = (pdf, tableBottomY) => {
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const footerY = Math.min(pageHeight - 70, tableBottomY + 20);
+    pdf.setFillColor(59, 130, 246);
+    pdf.rect(0, footerY, pageWidth, 60, "F");
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(10);
+    pdf.setFont("helvetica", "bold");
+    pdf.text(
+      "Corporate Office: 1-8-303, 3rd Floor, VK Towers, SP Road, RasoolPura, Secunderabad - 500003",
+      pageWidth / 2,
+      footerY + 25,
+      { align: "center" }
+    );
+    pdf.text(
+      "040 4519 5642 | info@aspireths.com | www.aspireths.com",
+      pageWidth / 2,
+      footerY + 42,
+      { align: "center" }
+    );
+  };
+
   return (
-    <div className="rtc-container">
-      <div className="rtc-grid">
-        {/* LEFT: Requirements review + Generate PDF button */}
-        <section className="rtc-panel rtc-panel-left">
-          <h3 className="rtc-title">Requirements Summary</h3>
-
-          <div className="rtc-table-wrap" ref={tableRef}>
-            <table className="rtc-table">
-              <thead>
-                <tr>
-                  <th>Requirement Questions</th>
-                  <th>Selected Specifications</th>
-                  <th>Total Price</th>
-                </tr>
-              </thead>
-              <tbody>
-                {requirements.map((req) => (
-                  <tr key={req.id}>
-                    <td>{req.name}</td>
-                    <td>
-                      {Array.isArray(req.items) && req.items.length > 0
-                        ? req.items.map((it) => it.name).join(", ")
-                        : "None selected"}
-                    </td>
-                    <td>{getTotalPrice(req.items)}</td>
-                  </tr>
-                ))}
-                <tr className="rtc-grand-total">
-                  <td />
-                  <td style={{ fontWeight: 700 }}>Grand Total</td>
-                  <td style={{ fontWeight: 700 }}>
-                    {requirements.reduce((acc, r) => acc + getTotalPrice(r.items), 0)}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div className="rtc-actions">
-            <button
-              className="rtc-btn rtc-btn-primary"
-              onClick={handleGeneratePdf}
-              disabled={!hasSelections}
-              title={!hasSelections ? "Select at least one requirement to enable" : "Generate and download PDF"}
-            >
-              Generate PDF (download)
-            </button>
-
-            {!hasSelections && <p className="rtc-note">Select at least one requirement to enable PDF generation.</p>}
-          </div>
-        </section>
-
-        {/* RIGHT: User contact form + Send PDF */}
-        <section className="rtc-panel rtc-panel-right">
-          <h3 className="rtc-title">Send Detailed Estimate</h3>
-
-          <form className={rtc-form} onSubmit={handleSendPdf} noValidate>
-            <fieldset disabled={!hasSelections} className="rtc-fieldset">
-              <label className="rtc-label" htmlFor="name">
-                Your Name
-              </label>
-              <input
-                id="name"
-                name="name"
-                className={rtc-input ${errors.name ? "rtc-input-error" : ""}}
-                value={formData.name}
-                onChange={handleInputChange}
-                placeholder="Enter your name"
-                type="text"
-              />
-              {errors.name && <div className="rtc-error">{errors.name}</div>}
-
-              <label className="rtc-label" htmlFor="email">
-                Your Email
-              </label>
-              <input
-                id="email"
-                name="email"
-                className={rtc-input ${errors.email ? "rtc-input-error" : ""}}
-                value={formData.email}
-                onChange={handleInputChange}
-                placeholder="e.g. akhila@gmail.com"
-                type="email"
-              />
-              {errors.email && <div className="rtc-error">{errors.email}</div>}
-
-              <label className="rtc-label" htmlFor="phone">
-                Your Phone
-              </label>
-              <input
-                id="phone"
-                name="phone"
-                className={rtc-input ${errors.phone ? "rtc-input-error" : ""}}
-                value={formData.phone}
-                onChange={handleInputChange}
-                placeholder="10-digit phone number"
-                type="tel"
-              />
-              {errors.phone && <div className="rtc-error">{errors.phone}</div>}
-
-              <label className="rtc-label" htmlFor="message">
-                Your Message (optional)
-              </label>
-              <textarea
-                id="message"
-                name="message"
-                className="rtc-textarea"
-                value={formData.message}
-                onChange={handleInputChange}
-                placeholder="Any additional notes (optional)"
-              />
-
-              <button className="rtc-btn rtc-btn-primary" type="submit" disabled={!hasSelections || loading}>
-                {loading ? "Sending..." : "Send PDF to Email"}
-              </button>
-            </fieldset>
-          </form>
-
-          {/* overlay explanation when disabled (visible but form is disabled) */}
-          {!hasSelections && (
-            <div className="rtc-overlay">
-              <div>Please select at least one requirement to enable sending the estimate.</div>
-            </div>
-          )}
-
-          {statusMessage && (
-            <div className={rtc-status ${statusMessage.startsWith("✅") ? "rtc-status-success" : "rtc-status-error"}}>
-              {statusMessage}
-            </div>
-          )}
-        </section>
+    <div className="requirements-container">
+      {/* ✅ Requirements Summary Table */}
+      <div className="requirements-table" ref={tableRef}>
+        <table>
+          <thead>
+            <tr>
+              <th>Requirement Questions</th>
+              <th>Selected Specifications</th>
+              <th>Total Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            {requirements.map((req) => (
+              <tr key={req.id}>
+                <td data-label="Requirement Questions">{req.name}</td>
+                <td data-label="Selected Specifications">
+                  {req.items && req.items.length > 0
+                    ? req.items.map((item) => item.name).join(", ")
+                    : "None selected"}
+                </td>
+                <td data-label="Total Price">{getTotalPrice(req.items)}</td>
+              </tr>
+            ))}
+          </tbody>
+       
+        <tr className="grand-total-row">
+          <td  style={{ textAlign: "right", fontWeight: "bold" }}>
+            Grand Total:
+          </td>
+          <td style={{ fontWeight: "bold" }}>
+            ₹
+            {requirements.reduce(
+              (acc, req) => acc + getTotalPrice(req.items),
+              0
+            )}
+          </td>
+        </tr>
+         </table>
       </div>
+
+      {/* ✅ User Info Form */}
+      <form className="user-form" noValidate>
+        <h3>Where should we send you the detailed estimate?</h3>
+
+        <label htmlFor="name">Your Name</label>
+        <input
+          id="name"
+          type="text"
+          name="name"
+          placeholder="Enter your name"
+          value={formData.name}
+          onChange={handleInputChange}
+        />
+        {errors.name && <p className="error-text">{errors.name}</p>}
+
+        <label htmlFor="email">Your Email</label>
+        <input
+          id="email"
+          type="email"
+          name="email"
+          placeholder="Enter your email (e.g. akhila@gmail.com)"
+          value={formData.email}
+          onChange={handleInputChange}
+        />
+        {errors.email && <p className="error-text">{errors.email}</p>}
+
+        <label htmlFor="phone">Your Phone</label>
+        <input
+          id="phone"
+          type="tel"
+          name="phone"
+          placeholder="Enter your 10-digit number"
+          value={formData.phone}
+          onChange={handleInputChange}
+        />
+        {errors.phone && <p className="error-text">{errors.phone}</p>}
+
+        <label htmlFor="message">Your Message (optional)</label>
+        <textarea
+          id="message"
+          name="message"
+          placeholder="Write your message"
+          value={formData.message}
+          onChange={handleInputChange}
+        />
+
+        <button type="button" onClick={handleSendPdf} disabled={loading}>
+          {loading ? "Sending..." : "Send PDF to Email"}
+        </button>
+
+        {statusMessage && (
+          <p
+            className={`status-message ${statusMessage.startsWith("⚠️") || statusMessage.startsWith("❌")
+                ? "error-text"
+                : "success-text"
+              }`}
+          >
+            {statusMessage}
+          </p>
+        )}
+      </form>
     </div>
   );
 };
 
 export default RequirementsTable;
-
-
-  
