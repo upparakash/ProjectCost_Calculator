@@ -1,7 +1,8 @@
+
 import React, { useRef, useState } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import "./RequirementsTable.css"
+import "./RequirementsTable.css"; // ✅ external stylesheet
 
 const RequirementsTable = ({
   selectedPlatforms,
@@ -54,61 +55,73 @@ const RequirementsTable = ({
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSendPdf = async () => {
-    const { name, email, phone, message } = formData;
-    if (!email || !name || !phone) {
-      alert("Please fill all required fields.");
-      return;
-    }
+const handleSendPdf = async () => {
+  const { name, email, phone, message } = formData;
+  if (!email || !name || !phone) {
+    alert("⚠️ Please fill all required fields (Name, Email, Phone)");
+    return;
+  }
 
-    setLoading(true); // ✅ show sending state
-    setStatusMessage("📤 Sending email... Please wait.");
+  setLoading(true);
+  setStatusMessage("📤 Sending email... Please wait.");
 
+  try {
+    const input = tableRef.current;
+    const canvas = await html2canvas(input, {
+      scale: 3,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: "#ffffff",
+    });
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("p", "pt", "a4");
+
+    await addStyledHeader(pdf);
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(16);
+    pdf.text("REQUIREMENTS SUMMARY", pageWidth / 2, 110, { align: "center" });
+
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pageWidth - 60;
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    pdf.addImage(imgData, "PNG", 30, 130, pdfWidth, pdfHeight);
+
+    await addStyledFooter(pdf, 130 + pdfHeight);
+
+    const pdfBlob = pdf.output("blob");
+    const formDataToSend = new FormData();
+    formDataToSend.append("pdf_file", pdfBlob, "requirements-summary.pdf");
+    formDataToSend.append("email", email);
+    formDataToSend.append("name", name);
+    formDataToSend.append("phone", phone);
+    formDataToSend.append("message", message);
+
+    const res = await fetch("https://app.aspireths.com/send-pdf", {
+      method: "POST",
+      body: formDataToSend,
+    });
+
+    let data;
     try {
-      const input = tableRef.current;
-      const canvas = await html2canvas(input, { scale: 3, useCORS: true });
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "pt", "a4");
-
-      await addStyledHeader(pdf);
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(16);
-      pdf.text("REQUIREMENTS SUMMARY", pageWidth / 2, 110, { align: "center" });
-
-      const imgProps = pdf.getImageProperties(imgData);
-      const pdfWidth = pdf.internal.pageSize.getWidth() - 60;
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-      pdf.addImage(imgData, "PNG", 30, 130, pdfWidth, pdfHeight);
-
-      addStyledFooter(pdf, 130 + pdfHeight);
-
-      const pdfBlob = pdf.output("blob");
-      const formDataToSend = new FormData();
-      formDataToSend.append("email", email);
-      formDataToSend.append("pdf", pdfBlob, "requirements-summary.pdf");
-      formDataToSend.append("name", name);
-      formDataToSend.append("phone", phone);
-      formDataToSend.append("message", message);
-
-      const res = await fetch("http://15.206.203.190:5000/send-pdf", {
-        method: "POST",
-        body: formDataToSend,
-      });
-
-      const data = await res.json();
-      if (res.ok) {
-        setStatusMessage("✅ Email sent successfully!");
-      } else {
-        setStatusMessage("❌ Failed to send email: " + data.error);
-      }
-    } catch (err) {
-      console.error(err);
-      setStatusMessage("❌ Error generating or sending PDF.");
-    } finally {
-      setLoading(false); // ✅ stop loading
+      data = await res.json();
+    } catch {
+      data = { error: "Invalid server response" };
     }
-  };
+
+    if (res.ok) {
+      setStatusMessage("✅ Email sent successfully!");
+    } else {
+      setStatusMessage("❌ Failed to send email: " + (data.error || "Unknown error"));
+    }
+  } catch (error) {
+    console.error(error);
+    setStatusMessage("❌ Error generating or sending PDF.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const addStyledHeader = (pdf) => {
     return new Promise((resolve) => {
@@ -241,4 +254,3 @@ const RequirementsTable = ({
 };
 
 export default RequirementsTable;
-
