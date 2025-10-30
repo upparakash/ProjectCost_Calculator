@@ -91,11 +91,26 @@ const RequirementsTable = ({
       formDataToSend.append("phone", phone);
       formDataToSend.append("message", message);
 
-      const res = await fetch("https://app.aspireths.com/send-pdf", {
-        method: "POST",
-        body: formDataToSend,
+      // const res = await fetch("https://app.aspireths.com/send-pdf", {
+      //   method: "POST",
+      //   body: formDataToSend,
+      // });
+    app.post("/send-pdf", async (req, res) =>{
+      const { name, email, requirements } = req.body;
+      const doc = new PDFDocument();
+      const pdfBuffer = await new Promise((resolve) =>{
+        const chunks  = [];
+        doc.on("data", chunks.push.bind((chunks));
+        doc.on("end", () => resolve(Buffer.concat(chunks)));
+        doc.text(`Name: ${name} `);
+        doc.text(JSON.stringify(requirements, null, 2));
+        doc.end();
       });
 
+      res.json({ message: "PDF generated and sent successfully!"});
+    });
+
+      
       const data = await res.json();
       if (res.ok) {
         setStatusMessage("✅ Email sent successfully!");
