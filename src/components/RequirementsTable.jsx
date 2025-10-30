@@ -55,32 +55,35 @@ const RequirementsTable = ({
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ✅ Validation helper
-  const validateForm = () => {
-    const { name, email, phone } = formData;
+  // ✅ Inside validateForm function — updated version
+const validateForm = () => {
+  const { name, email, phone } = formData;
 
-    const nameRegex = /^[A-Za-z\s]+$/;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRegex = /^[0-9]{10}$/;
+  // ✅ Only letters & spaces (2+ chars)
+  const nameRegex = /^[A-Za-z\s]{2,}$/;
+  // ✅ Proper email format: must end with .com, .in, .org, etc.
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/;
+  // ✅ Exactly 10 digits, no spaces or symbols
+  const phoneRegex = /^[0-9]{10}$/;
 
-    if (!name || !email || !phone) {
-      alert("Please fill all required fields.");
-      return false;
-    }
-    if (!nameRegex.test(name)) {
-      alert("Please enter a valid name (letters and spaces only).");
-      return false;
-    }
-    if (!emailRegex.test(email)) {
-      alert("Please enter a valid email address (e.g., akhila@gmail.com).");
-      return false;
-    }
-    if (!phoneRegex.test(phone)) {
-      alert("Please enter a valid 10-digit phone number.");
-      return false;
-    }
-    return true;
-  };
+  if (!name || !email || !phone) {
+    alert("Please fill all required fields.");
+    return false;
+  }
+  if (!nameRegex.test(name)) {
+    alert("Please enter a valid name (letters and spaces only).");
+    return false;
+  }
+  if (!emailRegex.test(email)) {
+    alert("Please enter a valid email address (e.g., akhila@gmail.com).");
+    return false;
+  }
+  if (!phoneRegex.test(phone)) {
+    alert("Please enter a valid 10-digit phone number.");
+    return false;
+  }
+  return true;
+};
 
   const handleSendPdf = async () => {
     if (!validateForm()) return;
