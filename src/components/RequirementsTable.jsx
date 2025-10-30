@@ -27,7 +27,7 @@ const RequirementsTable = ({
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
 
-  // ✅ Helper to calculate total price
+  // ✅ Helper: calculate total price
   const getTotalPrice = (array) => {
     if (!array || array.length === 0) return 0;
     return array.reduce((acc, item) => acc + item.price, 0);
@@ -47,20 +47,20 @@ const RequirementsTable = ({
     { id: 11, name: "Security", items: selectedSecurity },
   ];
 
-  // ✅ Handle input changes & clear errors
+  // ✅ Handle input changes
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: "" });
   };
 
-  // ✅ Validate all fields
+  // ✅ Validation
   const validateForm = () => {
     const { name, email, phone } = formData;
     const newErrors = {};
 
     const nameRegex = /^[A-Za-z\s]+$/;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/;
-    const phoneRegex = /^\d{10}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/; // requires .com, .in, etc.
+    const phoneRegex = /^\d{10}$/; // exactly 10 digits
 
     if (!name.trim()) newErrors.name = "Name is required.";
     else if (!nameRegex.test(name))
@@ -75,22 +75,30 @@ const RequirementsTable = ({
       newErrors.phone = "Enter a valid 10-digit number.";
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0; // ✅ return true only if valid
+
+    if (Object.keys(newErrors).length > 0) {
+      console.log("❌ Validation failed:", newErrors);
+      return false; // ⛔ invalid form
+    }
+
+    console.log("✅ Validation passed");
+    return true;
   };
 
-  // ✅ Send PDF (only after passing validation)
-  const handleSendPdf = async () => {
+  // ✅ Handle PDF send
+  const handleSendPdf = async (e) => {
+    e.preventDefault(); // stop any default submit behavior
+
     const isValid = validateForm();
     if (!isValid) {
       setStatusMessage("⚠️ Please fix the errors above before submitting.");
-      return; // ⛔ STOP: Do not hit backend
+      return; // 🚫 STOP — do not trigger backend
     }
 
     setLoading(true);
     setStatusMessage("📤 Sending email... Please wait.");
 
     try {
-      // generate PDF
       const input = tableRef.current;
       const canvas = await html2canvas(input, { scale: 3, useCORS: true });
       const imgData = canvas.toDataURL("image/png");
@@ -108,7 +116,6 @@ const RequirementsTable = ({
       pdf.addImage(imgData, "PNG", 30, 130, pdfWidth, pdfHeight);
       addStyledFooter(pdf, 130 + pdfHeight);
 
-      // prepare data
       const pdfBlob = pdf.output("blob");
       const formDataToSend = new FormData();
       formDataToSend.append("email", formData.email);
@@ -117,7 +124,6 @@ const RequirementsTable = ({
       formDataToSend.append("phone", formData.phone);
       formDataToSend.append("message", formData.message);
 
-      // send backend request
       const res = await fetch("https://app.aspireths.com/send-pdf", {
         method: "POST",
         body: formDataToSend,
@@ -127,7 +133,9 @@ const RequirementsTable = ({
       if (res.ok) {
         setStatusMessage("✅ Email sent successfully!");
       } else {
-        setStatusMessage("❌ Failed to send email: " + (data.error || "Unknown error"));
+        setStatusMessage(
+          "❌ Failed to send email: " + (data.error || "Unknown error")
+        );
       }
     } catch (err) {
       console.error(err);
@@ -137,7 +145,7 @@ const RequirementsTable = ({
     }
   };
 
-  // ✅ Styled header
+  // ✅ Header
   const addStyledHeader = (pdf) => {
     return new Promise((resolve) => {
       const logoUrl = "/AspireLogo.png";
@@ -162,7 +170,7 @@ const RequirementsTable = ({
     });
   };
 
-  // ✅ Styled footer
+  // ✅ Footer
   const addStyledFooter = (pdf, tableBottomY) => {
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
@@ -188,7 +196,7 @@ const RequirementsTable = ({
 
   return (
     <div className="requirements-container">
-      {/* ✅ Requirements Summary Table */}
+      {/* ✅ Requirements Table */}
       <div className="requirements-table" ref={tableRef}>
         <table>
           <thead>
@@ -281,3 +289,4 @@ const RequirementsTable = ({
 };
 
 export default RequirementsTable;
+
