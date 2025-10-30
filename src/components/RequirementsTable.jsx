@@ -23,10 +23,11 @@ const RequirementsTable = ({
     phone: "",
     message: "",
   });
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
 
-  // ✅ Helper to calculate total price
+  // ✅ Calculate total price
   const getTotalPrice = (array) => {
     if (!array || array.length === 0) return 0;
     return array.reduce((acc, item) => acc + item.price, 0);
@@ -46,49 +47,41 @@ const RequirementsTable = ({
     { id: 11, name: "Security", items: selectedSecurity },
   ];
 
-  const grandTotal = requirements.reduce(
-    (acc, req) => acc + getTotalPrice(req.items),
-    0
-  );
-
-  // ✅ Input change handler
+  // ✅ Input change
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" }); // clear errors when typing
   };
 
-  // ✅ Strong front-end validation
+  // ✅ Validation (returns boolean)
   const validateForm = () => {
     const { name, email, phone } = formData;
+    let newErrors = {};
 
     const nameRegex = /^[A-Za-z\s]+$/;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/; // must end with 2+ letters
-    const phoneRegex = /^\d{10}$/; // exactly 10 digits
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/;
+    const phoneRegex = /^\d{10}$/;
 
-    if (!name || !email || !phone) {
-      alert("⚠️ Please fill all required fields.");
-      return false;
-    }
-    if (!nameRegex.test(name)) {
-      alert("⚠️ Please enter a valid name (letters and spaces only).");
-      return false;
-    }
-    if (!emailRegex.test(email)) {
-      alert("⚠️ Please enter a valid email (e.g., akhila@gmail.com).");
-      return false;
-    }
-    if (!phoneRegex.test(phone)) {
-      alert("⚠️ Please enter a valid 10-digit phone number.");
-      return false;
-    }
+    if (!name.trim()) newErrors.name = "Name is required.";
+    else if (!nameRegex.test(name))
+      newErrors.name = "Only letters and spaces are allowed.";
 
-    return true;
+    if (!email.trim()) newErrors.email = "Email is required.";
+    else if (!emailRegex.test(email))
+      newErrors.email = "Enter a valid email (e.g., akhila@gmail.com).";
+
+    if (!phone.trim()) newErrors.phone = "Phone number is required.";
+    else if (!phoneRegex.test(phone))
+      newErrors.phone = "Enter a valid 10-digit number.";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  // ✅ Main function to generate and send PDF
+  // ✅ Send PDF (only after validation)
   const handleSendPdf = async () => {
-    // Run validation first
     const isValid = validateForm();
-    if (!isValid) return; // ⛔ stop here if invalid
+    if (!isValid) return; // ⛔ Stop immediately if invalid
 
     setLoading(true);
     setStatusMessage("📤 Sending email... Please wait.");
@@ -140,7 +133,7 @@ const RequirementsTable = ({
     }
   };
 
-  // ✅ Styled header
+  // ✅ Header design
   const addStyledHeader = (pdf) => {
     return new Promise((resolve) => {
       const logoUrl = "/AspireLogo.png";
@@ -165,7 +158,7 @@ const RequirementsTable = ({
     });
   };
 
-  // ✅ Styled footer
+  // ✅ Footer design
   const addStyledFooter = (pdf, tableBottomY) => {
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
@@ -216,7 +209,7 @@ const RequirementsTable = ({
         </table>
       </div>
 
-      <form className="user-form">
+      <form className="user-form" noValidate>
         <h3>Where should we send you the detailed estimate?</h3>
 
         <label htmlFor="name">Your Name</label>
@@ -227,8 +220,8 @@ const RequirementsTable = ({
           placeholder="Enter your name"
           value={formData.name}
           onChange={handleInputChange}
-          required
         />
+        {errors.name && <p className="error-text">{errors.name}</p>}
 
         <label htmlFor="email">Your Email</label>
         <input
@@ -238,8 +231,8 @@ const RequirementsTable = ({
           placeholder="Enter your email (e.g. akhila@gmail.com)"
           value={formData.email}
           onChange={handleInputChange}
-          required
         />
+        {errors.email && <p className="error-text">{errors.email}</p>}
 
         <label htmlFor="phone">Your Phone</label>
         <input
@@ -249,8 +242,8 @@ const RequirementsTable = ({
           placeholder="Enter your 10-digit number"
           value={formData.phone}
           onChange={handleInputChange}
-          required
         />
+        {errors.phone && <p className="error-text">{errors.phone}</p>}
 
         <label htmlFor="message">Your Message (optional)</label>
         <textarea
@@ -270,6 +263,5 @@ const RequirementsTable = ({
     </div>
   );
 };
-
 
 export default RequirementsTable;
