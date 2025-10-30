@@ -1,525 +1,141 @@
-/* ===================== WRAPPER ===================== */
-.table-form-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 40px auto;
-  gap: 25px;
-  font-family: "Poppins", sans-serif;
+/* RequirementsTable.css - full rewrite for two-panel layout */
+
+/* Container */
+.rtc-container {
+  max-width: 1100px;
+  margin: 18px auto;
+  padding: 12px;
+  font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #1f2937;
 }
 
-/* ===================== TABLE CONTAINER ===================== */
-.requirements-table-container {
-  width: 90%;
-  max-width: 850px;
+/* Two-column responsive grid */
+.rtc-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px; /* left flexible, right fixed*/
+  gap: 18px;
+  align-items: start;
+}
+
+/* Panels */
+.rtc-panel {
   background: #ffffff;
-  padding: 25px;
-  border-radius: 14px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  text-align: left;
-  transition: transform 0.2s ease-in-out;
-}
-
-.requirements-table-container:hover {
-  transform: scale(1.01);
-}
-
-.requirements-table-container h3 {
-  text-align: center;
-  color: #1e3a8a;
-  margin-bottom: 20px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-
-/* ===================== TABLE ===================== */
-.requirements-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-  color: #334155;
-}
-
-.requirements-table th,
-.requirements-table td {
+  border-radius: 10px;
   padding: 14px;
-  border: 1px solid #e2e8f0;
-  vertical-align: top;
+  box-shadow: 0 6px 18px rgba(16, 24, 40, 0.04);
+  position: relative;
 }
 
-.requirements-table th {
-  background-color: #3b82f6;
-  color: #fff;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: 600;
-}
-
-.requirements-table tr:nth-child(even) {
-  background-color: #f9fafb;
-}
-
-.requirements-table tr:hover {
-  background-color: #eff6ff;
-}
-
-/* Items Row */
-.item-row td {
-  background-color: #f8fafc;
-}
-
-/* Price Row */
-.price-row td {
-  background-color: #f1f5f9;
-  font-weight: 600;
+/* Titles */
+.rtc-title {
+  margin: 0 0 10px 0;
+  font-size: 1.05rem;
+  font-weight: 700;
   color: #0f172a;
 }
 
-/* Grand Total Row */
-.grand-total-row td {
-  background-color: #dbeafe;
+/* Table styles */
+.rtc-table-wrap { overflow: auto; border-radius: 8px; }
+.rtc-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 480px;
+}
+.rtc-table th,
+.rtc-table td {
+  padding: 10px 12px;
+  border: 1px solid #eef2f7;
+  text-align: left;
+  background: #fff;
+  font-size: 0.95rem;
+}
+.rtc-table thead th {
+  background: #f8fafc;
   font-weight: 700;
-  color: #1e40af;
-  border-top: 2px solid #3b82f6;
+}
+.rtc-grand-total td {
+  background: #fafafa;
 }
 
-/* Inline Items Styling */
-.inline-items {
+/* Actions area under the table */
+.rtc-actions {
+  margin-top: 12px;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 8px;
 }
-
-.item-chip {
-  background-color: #e0f2fe;
-  color: #0369a1;
-  border-radius: 16px;
-  padding: 5px 10px;
-  font-size: 13px;
-  font-weight: 500;
+.rtc-note {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.9rem;
 }
 
-/* ===================== FORM ===================== */
-.user-form {
-  width: 90%;
-  max-width: 850px;
-  background: #ffffff;
-  padding: 25px;
-  border-radius: 14px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-}
-
-.user-form h3 {
-  text-align: center;
-  color: #1e3a8a;
-  margin-bottom: 25px;
-  font-weight: 700;
-}
-
-.user-form label {
-  display: block;
-  margin-top: 12px;
-  font-weight: 600;
-  color: #334155;
-}
-
-.user-form input,
-.user-form textarea {
-  width: 100%;
+/* Buttons */
+.rtc-btn {
+  border: none;
   padding: 10px 12px;
-  margin-top: 6px;
-  border: 1px solid #cbd5e1;
   border-radius: 8px;
-  font-size: 14px;
-  transition: border-color 0.3s ease;
-}
-
-.user-form input:focus,
-.user-form textarea:focus {
-  border-color: #3b82f6;
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-}
-
-.user-form button {
-  width: 100%;
-  margin-top: 22px;
-  padding: 12px;
-  background-color: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.1s;
-}
-
-.user-form button:hover {
-  background-color: #2563eb;
-  transform: scale(1.02);
-}
-
-.status-message {
-  text-align: center;
-  color: #16a34a;
-  font-weight: 500;
-  margin-top: 12px;
-}
-
-/* ===================== RESPONSIVE ===================== */
-@media (max-width: 700px) {
-  .requirements-table-container,
-  .user-form {
-    width: 95%;
-    padding: 18px;
-  }
-
-  .requirements-table th,
-  .requirements-table td {
-    font-size: 13px;
-    padding: 10px;
-  }
-
-  .item-chip {
-    font-size: 12px;
-    padding: 4px 8px;
-  }
-}
-
-
-
-
-.user-form {
-  max-width: 500px;
-  margin: 30px auto;
-  padding: 20px;
-  background: #f8fafc;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.user-form h3 {
-  text-align: center;
-  color: #1e40af;
-  margin-bottom: 20px;
-}
-
-.user-form label {
-  display: block;
-  margin: 10px 0 5px;
   font-weight: 600;
-  color: #334155;
 }
-
-.user-form input,
-.user-form textarea {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  font-size: 14px;
-  transition: border-color 0.2s ease;
+.rtc-btn-primary {
+  background: #0b74de;
+  color: #fff;
 }
-
-.user-form input:focus,
-.user-form textarea:focus {
-  border-color: #3b82f6;
-  outline: none;
-}
-
-.user-form button {
-  width: 100%;
-  margin-top: 20px;
-  padding: 12px;
-  background-color: #3b82f6;
-  color: white;
-  font-size: 16px;
-  font-weight: 600;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.user-form button:hover {
-  background-color: #2563eb;
-}
-
-/* ----------- Status Message ----------- */
-.status-message {
-  text-align: center;
-  margin-top: 10px;
-  font-weight: 500;
-  color: #1e40af;
-}
-
-/* ----------- Mobile Responsiveness ----------- */
-@media (max-width: 600px) {
-  .user-form {
-    width: 90%;
-    padding: 15px;
-  }
-
-  .user-form input,
-  .user-form textarea {
-    font-size: 13px;
-  }
-
-  .user-form button {
-    font-size: 14px;
-    padding: 10px;
-  }
-}
-
-.error-text {
-  color: red;
-  font-size: 0.85rem;
-  margin-top: 4px;
-}
-
-.success-text {
-  color: green;
-  font-weight: 500;
-}
-
-input.error,
-textarea.error {
-  border: 1px solid red;
-}
-
-.status-message {
-  margin-top: 10px;
-  font-weight: 500;
-}
-
-
-
-.error-text {
-  color: red;
-  font-size: 0.85rem;
-  margin-top: 4px;
-}
-.success-text {
-  color: green;
-  font-size: 0.9rem;
-  margin-top: 4px;
-}
-
-.requirements-container {
-  max-width: 420px;
-  margin: 2rem auto;
-  padding: 1.5rem;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-}
-
-.user-form .form-group {
-  margin-bottom: 1rem;
-  display: flex;
-  flex-direction: column;
-}
-
-.user-form input {
-  padding: 0.6rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 1rem;
-}
-
-.user-form button {
-  width: 100%;
-  padding: 0.7rem;
-  border: none;
-  background-color: #007bff;
-  color: white;
-  font-size: 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.user-form button:disabled {
-  background-color: #aaa;
-  cursor: not-allowed;
-}
-
-.error-text {
-  color: red;
-  font-size: 0.85rem;
-  margin-top: 4px;
-}
-
-.success-text {
-  color: green;
-  font-size: 0.9rem;
-  margin-top: 8px;
-}
-
-.requirements-container {
-  max-width: 520px;
-  margin: 2rem auto;
-  padding: 1.5rem;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-}
-
-.user-form .form-group {
-  margin-bottom: 1rem;
-  display: flex;
-  flex-direction: column;
-}
-
-.user-form input,
-.user-form textarea {
-  padding: 0.6rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 1rem;
-  resize: none;
-}
-
-.user-form textarea {
-  min-height: 90px;
-}
-
-.user-form button {
-  width: 100%;
-  padding: 0.7rem;
-  border: none;
-  background-color: #007bff;
-  color: white;
-  font-size: 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.user-form button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.user-form.disabled {
+.rtc-btn[disabled] {
   opacity: 0.6;
-  pointer-events: none;
-}
-
-.error-text {
-  color: red;
-  font-size: 0.85rem;
-  margin-top: 4px;
-}
-
-.success-text {
-  color: green;
-  font-size: 0.9rem;
-  margin-top: 8px;
-}
-
-.info-text {
-  text-align: center;
-  font-size: 1rem;
-  color: #555;
-  margin-bottom: 1rem;
-}
-
-.requirements-container {
-  max-width: 520px;
-  margin: 2rem auto;
-  padding: 1.5rem;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  position: relative;
-}
-
-.info-text {
-  text-align: center;
-  font-size: 1rem;
-  color: #555;
-  margin-bottom: 1rem;
-}
-
-.form-wrapper {
-  position: relative;
-}
-
-.form-wrapper.disabled {
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-.form-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.7);
-  font-weight: 500;
-  font-size: 0.95rem;
-  color: #333;
-  border-radius: 16px;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group input,
-.form-group textarea {
-  padding: 0.6rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 1rem;
-  resize: none;
-}
-
-.form-group textarea {
-  min-height: 90px;
-}
-
-button {
-  width: 100%;
-  padding: 0.7rem;
-  border: none;
-  border-radius: 8px;
-  background: #007bff;
-  color: white;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-button:disabled {
-  background: #ccc;
   cursor: not-allowed;
 }
 
-.error-text {
-  color: red;
-  font-size: 0.85rem;
-  margin-top: 4px;
-}
-
-.success-text {
-  color: green;
+/* Form inside right panel */
+.rtc-form { display: block; }
+.rtc-fieldset { border: 0; padding: 0; margin: 0; }
+.rtc-label {
+  display: block;
+  margin-top: 10px;
   font-size: 0.9rem;
-  margin-top: 8px;
+  color: #374151;
+}
+.rtc-input,
+.rtc-textarea {
+  width: 100%;
+  margin-top: 6px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+.rtc-textarea { min-height: 90px; resize: vertical; }
+.rtc-input-error { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,0.06); }
+.rtc-error { color: #ef4444; margin-top: 6px; font-size: 0.88rem; }
+
+/* Overlay when form disabled but visible */
+.rtc-overlay {
+  position: absolute;
+  right: 14px;
+  left: 14px;
+  top: 14px;
+  bottom: 14px;
+  background: rgba(255,255,255,0.85);
+  border-radius: 10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color: #374151;
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 8;
 }
 
+/* Status messages */
+.rtc-status { margin-top: 12px; font-weight: 600; }
+.rtc-status-success { color: #059669; }
+.rtc-status-error { color: #ef4444; }
 
-
-.requirements-container { max-width: 900px; margin: 1.5rem auto; padding: 1rem; }
-.debug-info { font-size: 0.85rem; margin-bottom: 8px; color:#333; background:#f6f9ff; padding:6px 10px; border-radius:6px;}
-.requirements-table { width:100%; margin-bottom:12px; }
-.requirements-table table { width:100%; border-collapse: collapse; }
-.requirements-table th, .requirements-table td { padding:8px; border:1px solid #eee; text-align:left; background:#fff; }
-.info-text { text-align:center; color:#666; margin:10px 0; }
-.form-wrapper { position: relative; margin-top: 12px; }
-.form-wrapper.disabled { opacity: 0.65; }
-.form-overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background: rgba(255,255,255,0.85); z-index:4; pointer-events:none; border-radius:6px; font-weight:600; color:#333;}
-.error-text { color:red; margin-top:6px; font-size:0.9rem; }
-.success-text { color:green; margin-top:6px; font-size:0.95rem; }
-.status-message { margin-top:10px; font-weight:600; }
+/* Responsive: stack columns under 920px */
+@media (max-width: 920px) {
+  .rtc-grid { grid-template-columns: 1fr; }
+  .rtc-panel { padding: 12px; }
+  .rtc-overlay { left: 12px; right: 12px; top: 12px; bottom: 12px; }
+}
