@@ -509,3 +509,17 @@ button:disabled {
   margin-top: 8px;
 }
 
+
+
+.requirements-container { max-width: 900px; margin: 1.5rem auto; padding: 1rem; }
+.debug-info { font-size: 0.85rem; margin-bottom: 8px; color:#333; background:#f6f9ff; padding:6px 10px; border-radius:6px;}
+.requirements-table { width:100%; margin-bottom:12px; }
+.requirements-table table { width:100%; border-collapse: collapse; }
+.requirements-table th, .requirements-table td { padding:8px; border:1px solid #eee; text-align:left; background:#fff; }
+.info-text { text-align:center; color:#666; margin:10px 0; }
+.form-wrapper { position: relative; margin-top: 12px; }
+.form-wrapper.disabled { opacity: 0.65; }
+.form-overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background: rgba(255,255,255,0.85); z-index:4; pointer-events:none; border-radius:6px; font-weight:600; color:#333;}
+.error-text { color:red; margin-top:6px; font-size:0.9rem; }
+.success-text { color:green; margin-top:6px; font-size:0.95rem; }
+.status-message { margin-top:10px; font-weight:600; }
