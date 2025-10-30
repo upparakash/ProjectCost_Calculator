@@ -274,7 +274,22 @@
 .error-text {
   color: red;
   font-size: 0.85rem;
-  margin-top: 2px;
+  margin-top: 4px;
+}
+
+.success-text {
+  color: green;
+  font-weight: 500;
+}
+
+input.error,
+textarea.error {
+  border: 1px solid red;
+}
+
+.status-message {
+  margin-top: 10px;
+  font-weight: 500;
 }
 
 
