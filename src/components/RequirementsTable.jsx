@@ -139,7 +139,7 @@ const RequirementsTable = ({
       formDataToSend.append("tableDetails", formatTableDetails());
 
       // Send to backend
-      const response = await fetch("http://15.206.203.190:5000/send-app-email", {
+      const response = await fetch("https://app.aspireths.com/send-app-email", {
         method: "POST",
         body: formDataToSend,
       });
