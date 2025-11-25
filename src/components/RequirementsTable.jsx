@@ -130,7 +130,7 @@ const RequirementsTable = ({
     pdf.addImage(imgData, "PNG", 20, startY + 20, pdfWidth, pdfHeight);
 
     // Grand Total (below table)
-    const totalY = startY + 20 + pdfHeight + 20;
+    const totalY = startY + 20 + pdfHeight + 80;
     // pdf.text(`Grand Total: ₹${grandTotal}`, 20, totalY);
 
     // ---------- FOOTER ----------
