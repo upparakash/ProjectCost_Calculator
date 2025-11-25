@@ -199,7 +199,7 @@ const RequirementsTable = ({
   const addStyledFooter = (pdf, tableBottomY) => {
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
-    const footerY = pageHeight - 60;
+    const footerY = Math.min(pageHeight - 70, tableBottomY + 80);
     pdf.setFillColor(59, 130, 246);
     pdf.rect(0, footerY, pageWidth, 60, "F");
     pdf.setTextColor(255, 255, 255);
