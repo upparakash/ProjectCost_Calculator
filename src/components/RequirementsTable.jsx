@@ -159,6 +159,54 @@ const RequirementsTable = ({
       setLoading(false);
     }
   };
+  const addStyledHeader = (pdf) => {
+    return new Promise((resolve) => {
+      const logoUrl = "/AspireLogo.png";
+      const logoImg = new Image();
+      logoImg.crossOrigin = "Anonymous";
+      logoImg.src = logoUrl;
+      logoImg.onload = () => {
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        pdf.setFillColor(59, 130, 246);
+        pdf.rect(0, 0, pageWidth, 70, "F");
+        pdf.setTextColor(255, 255, 255);
+        pdf.addImage(logoImg, "PNG", 40, 10, 40, 40);
+        pdf.setFontSize(16);
+        pdf.setFont("helvetica", "bold");
+        pdf.text("ASPIRE TEKHUB SOLUTIONS", 90, 35);
+        pdf.setFontSize(10);
+        const currentDate = new Date().toLocaleDateString();
+        pdf.text(`Date: ${currentDate}`, pageWidth - 120, 35);
+        pdf.setTextColor(0, 0, 0);
+        resolve();
+      };
+    });
+  };
+
+  // ✅ Styled footer
+  const addStyledFooter = (pdf, tableBottomY) => {
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const footerY = Math.min(pageHeight - 70, tableBottomY + 20);
+    pdf.setFillColor(59, 130, 246);
+    pdf.rect(0, footerY, pageWidth, 60, "F");
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(10);
+    pdf.setFont("helvetica", "bold");
+    pdf.text(
+      "Corporate Office: 1-8-303, 3rd Floor, VK Towers, SP Road, RasoolPura, Secunderabad - 500003",
+      pageWidth / 2,
+      footerY + 25,
+      { align: "center" }
+    );
+    pdf.text(
+      "040 4519 5642 | info@aspireths.com | www.aspireths.com",
+      pageWidth / 2,
+      footerY + 42,
+      { align: "center" }
+    );
+  };
+
 
   return (
     <div className="requirements-container">
