@@ -112,6 +112,7 @@ const RequirementsTable = ({
       const imgData = canvas.toDataURL("image/png");
 
       const pdf = new jsPDF("p", "pt", "a4");
+      await addStyledHeader(pdf);
       pdf.setFontSize(16);
       pdf.text("APP REQUIREMENTS SUMMARY", 150, 40);
 
@@ -127,6 +128,7 @@ const RequirementsTable = ({
       const pdfFile = new File([pdf.output("blob")], "app-requirements.pdf", {
         type: "application/pdf",
       });
+       addStyledFooter(pdf, totalY);
 
       // Prepare FormData
       const formDataToSend = new FormData();
