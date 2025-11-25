@@ -97,70 +97,80 @@ const RequirementsTable = ({
 
   // ---------- Generate & Send PDF ----------
   const handleSendPdf = async () => {
-    if (!validateForm()) {
-      setStatusMessage("⚠️ Please fix the errors above.");
-      return;
+  if (!validateForm()) {
+    setStatusMessage("⚠️ Please fix the errors above.");
+    return;
+  }
+
+  setLoading(true);
+  setStatusMessage("📤 Sending email...");
+
+  try {
+    const input = tableRef.current;
+    const canvas = await html2canvas(input, { scale: 3 });
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF("p", "pt", "a4");
+
+    // ---------- HEADER ----------
+    await addStyledHeader(pdf);
+
+    // Move content below header
+    const startY = 90;
+
+    // Title
+    pdf.setFontSize(16);
+    pdf.text("APP REQUIREMENTS SUMMARY", 150, startY);
+
+    // Table Image
+    const pdfWidth = pdf.internal.pageSize.getWidth() - 40;
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+    pdf.addImage(imgData, "PNG", 20, startY + 20, pdfWidth, pdfHeight);
+
+    // Grand Total (below table)
+    const totalY = startY + 20 + pdfHeight + 20;
+    pdf.text(`Grand Total: ₹${grandTotal}`, 20, totalY);
+
+    // ---------- FOOTER ----------
+    addStyledFooter(pdf, totalY);
+
+    // Create file
+    const pdfFile = new File([pdf.output("blob")], "app-requirements.pdf", {
+      type: "application/pdf",
+    });
+
+    // Send backend
+    const formDataToSend = new FormData();
+    formDataToSend.append("pdf", pdfFile);
+    formDataToSend.append("name", formData.name);
+    formDataToSend.append("email", formData.email);
+    formDataToSend.append("phone", formData.phone);
+    formDataToSend.append("message", formData.message);
+    formDataToSend.append("grandTotal", grandTotal);
+    formDataToSend.append("tableDetails", formatTableDetails());
+
+    const response = await fetch("https://app.aspireths.com/send-app-email", {
+      method: "POST",
+      body: formDataToSend,
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      setStatusMessage("✅ Email sent successfully!");
+      setFormData({ name: "", email: "", phone: "", message: "" });
+    } else {
+      setStatusMessage("❌ " + (data.error || "Failed to send email"));
     }
+  } catch (err) {
+    console.error(err);
+    setStatusMessage("❌ Error sending PDF.");
+  } finally {
+    setLoading(false);
+  }
+};
 
-    setLoading(true);
-    setStatusMessage("📤 Sending email...");
-
-    try {
-      // Generate PDF from table
-      const input = tableRef.current;
-      const canvas = await html2canvas(input, { scale: 3 });
-      const imgData = canvas.toDataURL("image/png");
-
-      const pdf = new jsPDF("p", "pt", "a4");
-      await addStyledHeader(pdf);
-      pdf.setFontSize(16);
-      pdf.text("APP REQUIREMENTS SUMMARY", 150, 40);
-
-      const pdfWidth = pdf.internal.pageSize.getWidth() - 40;
-      const imgProps = pdf.getImageProperties(imgData);
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-      pdf.addImage(imgData, "PNG", 20, 70, pdfWidth, pdfHeight);
-
-      // Add Grand Total
-      pdf.text(`Grand Total: ₹${grandTotal}`, 20, 80 + pdfHeight);
-
-      const pdfFile = new File([pdf.output("blob")], "app-requirements.pdf", {
-        type: "application/pdf",
-      });
-       addStyledFooter(pdf, totalY);
-
-      // Prepare FormData
-      const formDataToSend = new FormData();
-      formDataToSend.append("pdf", pdfFile);
-      formDataToSend.append("name", formData.name);
-      formDataToSend.append("email", formData.email);
-      formDataToSend.append("phone", formData.phone);
-      formDataToSend.append("message", formData.message);
-      formDataToSend.append("grandTotal", grandTotal);
-      formDataToSend.append("tableDetails", formatTableDetails());
-
-      // Send to backend
-      const response = await fetch("https://app.aspireths.com/send-app-email", {
-        method: "POST",
-        body: formDataToSend,
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setStatusMessage("✅ Email sent successfully!");
-        setFormData({ name: "", email: "", phone: "", message: "" });
-      } else {
-        setStatusMessage("❌ " + (data.error || "Failed to send email"));
-      }
-    } catch (err) {
-      console.error(err);
-      setStatusMessage("❌ Error sending PDF.");
-    } finally {
-      setLoading(false);
-    }
-  };
   const addStyledHeader = (pdf) => {
     return new Promise((resolve) => {
       const logoUrl = "/AspireLogo.png";
