@@ -1,6 +1,5 @@
 import React, { useRef, useState } from "react";
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import "./RequirementsTable.css";
 
 const RequirementsTable = ({
@@ -17,22 +16,18 @@ const RequirementsTable = ({
   selectedSecurity,
 }) => {
   const tableRef = useRef();
-
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     message: "",
   });
-
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [statusMessage, setStatusMessage] = useState("");
 
-  // ---------- Price Calculation ----------
   const getTotalPrice = (array) => {
     if (!array || array.length === 0) return 0;
-    return array.reduce((acc, item) => acc + (item.price || 0), 0);
+    return array.reduce((acc, item) => acc + item.price, 0);
   };
 
   const requirements = [
@@ -49,182 +44,178 @@ const RequirementsTable = ({
     { id: 11, name: "Security", items: selectedSecurity },
   ];
 
-  const grandTotal = requirements.reduce(
-    (acc, req) => acc + getTotalPrice(req.items),
-    0
-  );
-
-  // ---------- Table Details ----------
-  const formatTableDetails = () =>
-    requirements
-      .map((req) => {
-        const selected =
-          req.items?.length > 0
-            ? req.items.map((i) => i.name).join(", ")
-            : "None";
-        return `${req.name}: ${selected}`;
-      })
-      .join("\n");
-
-  // ---------- Input Handler ----------
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: "" });
   };
 
-  // ---------- Validation ----------
   const validateForm = () => {
-    const { name, email, phone } = formData;
     const newErrors = {};
-    const nameRegex = /^[A-Za-z\s]+$/;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/;
-    const phoneRegex = /^\d{10}$/;
-
+    const { name, email, phone } = formData;
     if (!name.trim()) newErrors.name = "Name is required.";
-    else if (!nameRegex.test(name))
-      newErrors.name = "Only letters and spaces allowed.";
-
     if (!email.trim()) newErrors.email = "Email is required.";
-    else if (!emailRegex.test(email)) newErrors.email = "Invalid email.";
-
     if (!phone.trim()) newErrors.phone = "Phone number is required.";
-    else if (!phoneRegex.test(phone))
-      newErrors.phone = "Enter a valid 10-digit number.";
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // ---------- Generate & Send PDF ----------
-  const handleSendPdf = async () => {
-  if (!validateForm()) {
-    setStatusMessage("⚠️ Please fix the errors above.");
-    return;
-  }
-
-  setLoading(true);
-  setStatusMessage("📤 Sending email...");
-
-  try {
-    const input = tableRef.current;
-    const canvas = await html2canvas(input, { scale: 3 });
-    const imgData = canvas.toDataURL("image/png");
-
-    const pdf = new jsPDF("p", "pt", "a4");
-
-    // ---------- HEADER ----------
-    await addStyledHeader(pdf);
-
-    // Move content below header
-    const startY = 90;
-
-    // Title
-    pdf.setFontSize(16);
-    pdf.text("APP REQUIREMENTS SUMMARY", 150, startY);
-
-    // Table Image
-    const pdfWidth = pdf.internal.pageSize.getWidth() - 40;
-    const imgProps = pdf.getImageProperties(imgData);
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-    pdf.addImage(imgData, "PNG", 20, startY + 20, pdfWidth, pdfHeight);
-
-    // Grand Total (below table)
-    const totalY = startY + 20 + pdfHeight + 20;
-    pdf.text(`Grand Total: RS.${grandTotal}`, 20, totalY);
-
-    // ---------- FOOTER ----------
-    addStyledFooter(pdf, totalY);
-
-    // Create file
-    const pdfFile = new File([pdf.output("blob")], "app-requirements.pdf", {
-      type: "application/pdf",
-    });
-
-    // Send backend
-    const formDataToSend = new FormData();
-    formDataToSend.append("pdf", pdfFile);
-    formDataToSend.append("name", formData.name);
-    formDataToSend.append("email", formData.email);
-    formDataToSend.append("phone", formData.phone);
-    formDataToSend.append("message", formData.message);
-    formDataToSend.append("grandTotal", grandTotal);
-    formDataToSend.append("tableDetails", formatTableDetails());
-
-    const response = await fetch("https://app.aspireths.com/send-app-email", {
-      method: "POST",
-      body: formDataToSend,
-    });
-
-    const data = await response.json();
-    if (response.ok) {
-      setStatusMessage("✅ Email sent successfully!");
-      setFormData({ name: "", email: "", phone: "", message: "" });
-    } else {
-      setStatusMessage("❌ " + (data.error || "Failed to send email"));
-    }
-  } catch (err) {
-    console.error(err);
-    setStatusMessage("❌ Error sending PDF.");
-  } finally {
-    setLoading(false);
-  }
-};
-
   const addStyledHeader = (pdf) => {
     return new Promise((resolve) => {
-      const logoUrl = "/AspireLogo.png";
-      const logoImg = new Image();
-      logoImg.crossOrigin = "Anonymous";
-      logoImg.src = logoUrl;
-      logoImg.onload = () => {
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        pdf.setFillColor(59, 130, 246);
-        pdf.rect(0, 0, pageWidth, 70, "F");
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const headerHeight = 60;
+      const logo = new Image();
+      logo.src = "/AspireLogo.png";
+      logo.onload = () => {
+        pdf.setFillColor(0, 74, 173);
+        pdf.rect(0, 0, pageWidth, headerHeight, "F");
+        pdf.addImage(logo, "PNG", 20, 10, 40, 40);
         pdf.setTextColor(255, 255, 255);
-        pdf.addImage(logoImg, "PNG", 40, 10, 40, 40);
-        pdf.setFontSize(16);
         pdf.setFont("helvetica", "bold");
-        pdf.text("ASPIRE TEKHUB SOLUTIONS", 90, 35);
-        pdf.setFontSize(10);
-        const currentDate = new Date().toLocaleDateString();
-        pdf.text(`Date: ${currentDate}`, pageWidth - 120, 35);
-        pdf.setTextColor(0, 0, 0);
+        pdf.setFontSize(20);
+        pdf.text("ASPIRE TEKHUB SOLUTIONS", pageWidth / 2, 30, { align: "center" });
+        pdf.setFontSize(12);
+        pdf.text(new Date().toLocaleDateString(), pageWidth - 70, 30);
         resolve();
       };
     });
   };
 
-  // ✅ Styled footer
-  const addStyledFooter = (pdf, tableBottomY) => {
+  const addStyledFooter = (pdf) => {
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
-   const footerY = Math.min(pageHeight - 70, tableBottomY + 140);
-
-
-    pdf.setFillColor(59, 130, 246);
-    pdf.rect(0, footerY, pageWidth, 60, "F");
+    const footerHeight = 60;
+    pdf.setFillColor(0, 74, 173);
+    pdf.rect(0, pageHeight - footerHeight, pageWidth, footerHeight, "F");
     pdf.setTextColor(255, 255, 255);
-    pdf.setFontSize(10);
     pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(12);
     pdf.text(
-      "Corporate Office: 1-8-303, 3rd Floor, VK Towers, SP Road, RasoolPura, Secunderabad - 500003",
+      "Corporate Office: 1-8-303, 3rd Floor, VK Towers, SP Road, Rasoolpura, Secunderabad - 500003",
       pageWidth / 2,
-      footerY + 25,
+      pageHeight - 35,
       { align: "center" }
     );
     pdf.text(
-      "040 4519 5642 | info@aspireths.com | www.aspireths.com",
+      "040 4519 5642  |  info@aspireths.com  |  www.aspireths.com",
       pageWidth / 2,
-      footerY + 42,
+      pageHeight - 15,
       { align: "center" }
     );
   };
 
+  const generateStyledPdf = async () => {
+    const pdf = new jsPDF("p", "pt", "a4");
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    await addStyledHeader(pdf);
+
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(20);
+    pdf.setTextColor(0, 74, 173);
+    pdf.text("REQUIREMENTS SUMMARY", pageWidth / 2, 110, { align: "center" });
+
+    const startX = 40;
+    let rowY = 150;
+    const baseRowHeight = 25;
+
+    // Fixed column widths
+    const colWidths = {
+      category: 150,
+      items: 250,
+      price: 100,
+    };
+
+    // Table Header
+    pdf.setFillColor(0, 74, 173);
+    pdf.rect(startX, rowY, colWidths.category + colWidths.items + colWidths.price, baseRowHeight, "F");
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(12);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("Category", startX + 5, rowY + 17);
+    pdf.text("Selected Items", startX + colWidths.category + 5, rowY + 17);
+    pdf.text("Price (Rs.)", startX + colWidths.category + colWidths.items + 5, rowY + 17);
+    rowY += baseRowHeight;
+
+    pdf.setFont("helvetica", "normal");
+    pdf.setTextColor(0, 0, 0);
+
+    requirements.forEach((req) => {
+      const items = req.items && req.items.length > 0 ? req.items : [{ name: "None selected", price: 0 }];
+      const totalPrice = getTotalPrice(req.items);
+
+      const splitText = pdf.splitTextToSize(items.map((item) => item.name).join("\n"), colWidths.items - 10);
+      const cellHeight = baseRowHeight + (splitText.length - 1) * 14;
+      const middleY = rowY + cellHeight / 2 + 5;
+
+      // Category cell
+      pdf.rect(startX, rowY, colWidths.category, cellHeight);
+      pdf.text(req.name, startX + 5, rowY + 17);
+
+      // Selected Items cell
+      pdf.rect(startX + colWidths.category, rowY, colWidths.items, cellHeight);
+      pdf.text(splitText, startX + colWidths.category + 5, rowY + 17);
+
+      // Price cell (right-aligned)
+      pdf.rect(startX + colWidths.category + colWidths.items, rowY, colWidths.price, cellHeight);
+      const priceText = `Rs.${totalPrice.toLocaleString()}`;
+      const priceX = startX + colWidths.category + colWidths.items + colWidths.price - 5 - pdf.getTextWidth(priceText);
+      pdf.text(priceText, priceX, middleY);
+
+      rowY += cellHeight;
+
+      if (rowY + baseRowHeight > pageHeight - 100) {
+        addStyledFooter(pdf);
+        pdf.addPage();
+        rowY = 40;
+      }
+    });
+
+    // Grand Total
+    const gTotal = requirements.reduce((acc, req) => acc + getTotalPrice(req.items), 0);
+    pdf.setFont("helvetica", "bold");
+    pdf.setTextColor(0, 74, 173);
+    pdf.rect(startX, rowY, colWidths.category + colWidths.items + colWidths.price, baseRowHeight);
+    pdf.text("Grand Total", startX + 5, rowY + 17);
+    const gTotalText = `Rs.${gTotal.toLocaleString()}`;
+    const gTotalX = startX + colWidths.category + colWidths.items + colWidths.price - 5 - pdf.getTextWidth(gTotalText);
+    pdf.text(gTotalText, gTotalX, rowY + 17);
+
+    rowY += baseRowHeight + 50;
+    addStyledFooter(pdf);
+
+    return pdf.output("blob");
+  };
+
+  const handleSendPdf = async () => {
+    if (!validateForm()) {
+      alert("⚠️ Please fix the errors before submitting!");
+      return;
+    }
+    setLoading(true);
+    try {
+      const pdfBlob = await generateStyledPdf();
+      const formDataToSend = new FormData();
+      formDataToSend.append("email", formData.email);
+      formDataToSend.append("pdf", pdfBlob, "requirements-summary.pdf");
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("phone", formData.phone);
+      formDataToSend.append("message", formData.message);
+
+      const res = await fetch("https://app.aspireths.com/send-app-email", {
+        method: "POST",
+        body: formDataToSend,
+      });
+      if (res.ok) alert("✅ Email sent successfully!");
+      else alert("❌ Failed to send email.");
+    } catch (err) {
+      alert("❌ Error generating or sending PDF.");
+    }
+    setLoading(false);
+  };
 
   return (
     <div className="requirements-container">
-      {/* ---------- Requirements Table ---------- */}
       <div className="requirements-table" ref={tableRef}>
         <table>
           <thead>
@@ -239,59 +230,68 @@ const RequirementsTable = ({
               <tr key={req.id}>
                 <td>{req.name}</td>
                 <td>
-                  {req.items?.length > 0
-                    ? req.items.map((i) => i.name).join(", ")
-                    : "None"}
+                  {req.items && req.items.length > 0
+                    ? req.items.map((item) => item.name).join(", ")
+                    : "None selected"}
                 </td>
-                <td>₹{getTotalPrice(req.items)}</td>
+                <td>{getTotalPrice(req.items)}</td>
               </tr>
             ))}
             <tr className="grand-total-row">
-              <td style={{ textAlign: "right", fontWeight: "bold" }}>
+              <td colSpan="2" style={{ textAlign: "right", fontWeight: "bold" }}>
                 Grand Total:
               </td>
-              <td colSpan={2} style={{ fontWeight: "bold" }}>
-                ₹{grandTotal}
+              <td style={{ fontWeight: "bold" }}>
+                ₹{requirements.reduce((acc, req) => acc + getTotalPrice(req.items), 0)}
               </td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      {/* ---------- User Form ---------- */}
-      <form className="user-form" onSubmit={(e) => e.preventDefault()}>
-        <h3>Where should we send your estimate?</h3>
-
-        <label>Name</label>
-        <input name="name" value={formData.name} onChange={handleInputChange} />
+      <form className="user-form" noValidate>
+        <h3>Where should we send the detailed estimate?</h3>
+        <label>Your Name</label>
+        <input
+          type="text"
+          name="name"
+          placeholder="Enter your name"
+          value={formData.name}
+          onChange={handleInputChange}
+        />
         {errors.name && <p className="error-text">{errors.name}</p>}
 
-        <label>Email</label>
-        <input name="email" value={formData.email} onChange={handleInputChange} />
+        <label>Your Email</label>
+        <input
+          type="email"
+          name="email"
+          placeholder="Enter your email"
+          value={formData.email}
+          onChange={handleInputChange}
+        />
         {errors.email && <p className="error-text">{errors.email}</p>}
 
-        <label>Phone</label>
-        <input name="phone" value={formData.phone} onChange={handleInputChange} />
+        <label>Your Phone</label>
+        <input
+          type="tel"
+          name="phone"
+          placeholder="Enter your phone number"
+          value={formData.phone}
+          onChange={handleInputChange}
+        />
         {errors.phone && <p className="error-text">{errors.phone}</p>}
 
-        <label>Message (optional)</label>
-        <textarea name="message" value={formData.message} onChange={handleInputChange} />
+        <label>Your Message (optional)</label>
+        <textarea
+          name="message"
+          placeholder="Write your message"
+          value={formData.message}
+          onChange={handleInputChange}
+        />
 
         <button type="button" onClick={handleSendPdf} disabled={loading}>
           {loading ? "Sending..." : "Send PDF to Email"}
         </button>
-
-        {statusMessage && (
-          <p
-            className={
-              statusMessage.startsWith("❌") || statusMessage.startsWith("⚠️")
-                ? "error-text"
-                : "success-text"
-            }
-          >
-            {statusMessage}
-          </p>
-        )}
       </form>
     </div>
   );
