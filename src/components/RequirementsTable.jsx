@@ -29,7 +29,11 @@ const RequirementsTable = ({
     if (!array || array.length === 0) return 0;
     return array.reduce((acc, item) => acc + item.price, 0);
   };
-
+    const formatTableDetails = () => {
+  return requirements
+    .map(req => `${req.name}: ${req.items.map(i => i.name).join(", ")}`)
+    .join("\n");
+};
   const requirements = [
     { id: 1, name: "Platform", items: selectedPlatforms },
     { id: 2, name: "Size", items: selectedSizes },
@@ -201,6 +205,10 @@ const RequirementsTable = ({
       formDataToSend.append("name", formData.name);
       formDataToSend.append("phone", formData.phone);
       formDataToSend.append("message", formData.message);
+        formDataToSend.append("message", formData.message);
+   formDataToSend.append("grandTotal", grandTotal);
+
+      
 
       const res = await fetch("https://app.aspireths.com/send-app-email", {
         method: "POST",
