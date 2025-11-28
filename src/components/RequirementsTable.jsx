@@ -25,10 +25,7 @@ const RequirementsTable = ({
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
-  const getTotalPrice = (array) => {
-    if (!array || array.length === 0) return 0;
-    return array.reduce((acc, item) => acc + item.price, 0);
-  };
+  const getTotalPrice = (array) => (array && array.length ? array.reduce((acc, item) => acc + item.price, 0) : 0);
 
   const requirements = [
     { id: 1, name: "Platform", items: selectedPlatforms },
@@ -44,6 +41,11 @@ const RequirementsTable = ({
     { id: 11, name: "Security", items: selectedSecurity },
   ];
 
+  const grandTotal = requirements.reduce((acc, req) => acc + getTotalPrice(req.items), 0);
+
+  const formatTableDetails = () =>
+    requirements.map((req) => `${req.name}: ${req.items.map((i) => i.name).join(", ")}`).join("\n");
+
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: "" });
@@ -51,16 +53,15 @@ const RequirementsTable = ({
 
   const validateForm = () => {
     const newErrors = {};
-    const { name, email, phone } = formData;
-    if (!name.trim()) newErrors.name = "Name is required.";
-    if (!email.trim()) newErrors.email = "Email is required.";
-    if (!phone.trim()) newErrors.phone = "Phone number is required.";
+    if (!formData.name.trim()) newErrors.name = "Name is required.";
+    if (!formData.email.trim()) newErrors.email = "Email is required.";
+    if (!formData.phone.trim()) newErrors.phone = "Phone number is required.";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const addStyledHeader = (pdf) => {
-    return new Promise((resolve) => {
+  const addStyledHeader = (pdf) =>
+    new Promise((resolve) => {
       const pageWidth = pdf.internal.pageSize.getWidth();
       const headerHeight = 60;
       const logo = new Image();
@@ -78,7 +79,6 @@ const RequirementsTable = ({
         resolve();
       };
     });
-  };
 
   const addStyledFooter = (pdf) => {
     const pageWidth = pdf.internal.pageSize.getWidth();
@@ -95,12 +95,9 @@ const RequirementsTable = ({
       pageHeight - 35,
       { align: "center" }
     );
-    pdf.text(
-      "040 4519 5642  |  info@aspireths.com  |  www.aspireths.com",
-      pageWidth / 2,
-      pageHeight - 15,
-      { align: "center" }
-    );
+    pdf.text("040 4519 5642  |  info@aspireths.com  |  www.aspireths.com", pageWidth / 2, pageHeight - 15, {
+      align: "center",
+    });
   };
 
   const generateStyledPdf = async () => {
@@ -118,19 +115,14 @@ const RequirementsTable = ({
     const startX = 40;
     let rowY = 150;
     const baseRowHeight = 25;
+    const colWidths = { category: 150, items: 250, price: 100 };
 
-    const colWidths = {
-      category: 150,
-      items: 250,
-      price: 100,
-    };
-
-    // Table Header
+    // Table header
     pdf.setFillColor(0, 74, 173);
     pdf.rect(startX, rowY, colWidths.category + colWidths.items + colWidths.price, baseRowHeight, "F");
     pdf.setTextColor(255, 255, 255);
-    pdf.setFontSize(12);
     pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(12);
     pdf.text("Category", startX + 5, rowY + 17);
     pdf.text("Selected Items", startX + colWidths.category + 5, rowY + 17);
     pdf.text("Price (Rs.)", startX + colWidths.category + colWidths.items + 5, rowY + 17);
@@ -139,11 +131,11 @@ const RequirementsTable = ({
     pdf.setFont("helvetica", "normal");
     pdf.setTextColor(0, 0, 0);
 
+    // Table rows
     requirements.forEach((req) => {
-      const items = req.items && req.items.length > 0 ? req.items : [{ name: "None selected", price: 0 }];
+      const items = req.items && req.items.length ? req.items : [{ name: "None selected", price: 0 }];
       const totalPrice = getTotalPrice(req.items);
-
-      const splitText = pdf.splitTextToSize(items.map((item) => item.name).join("\n"), colWidths.items - 10);
+      const splitText = pdf.splitTextToSize(items.map((i) => i.name).join("\n"), colWidths.items - 10);
       const cellHeight = baseRowHeight + (splitText.length - 1) * 14;
       const middleY = rowY + cellHeight / 2 + 5;
 
@@ -167,18 +159,38 @@ const RequirementsTable = ({
       }
     });
 
-    const gTotal = requirements.reduce((acc, req) => acc + getTotalPrice(req.items), 0);
+    // Grand Total
     pdf.setFont("helvetica", "bold");
     pdf.setTextColor(0, 74, 173);
     pdf.rect(startX, rowY, colWidths.category + colWidths.items + colWidths.price, baseRowHeight);
     pdf.text("Grand Total", startX + 5, rowY + 17);
-    const gTotalText = `Rs.${gTotal.toLocaleString()}`;
+    const gTotalText = `Rs.${grandTotal.toLocaleString()}`;
     const gTotalX = startX + colWidths.category + colWidths.items + colWidths.price - 5 - pdf.getTextWidth(gTotalText);
     pdf.text(gTotalText, gTotalX, rowY + 17);
+    rowY += baseRowHeight + 40;
 
-    rowY += baseRowHeight + 50;
+    // Define notes properly
+    const noteLines = [
+      { text: "Note:", bold: true },
+      { text: "This is an auto-generated document and doesn’t require any signature", bold: false },
+      { text: "This document is valid only for This Week", bold: false },
+    ];
+
+    // Page break check for note
+    if (rowY + noteLines.length * 14 > pageHeight - 60) {
+      addStyledFooter(pdf);
+      pdf.addPage();
+      rowY = 40;
+    }
+
+    noteLines.forEach((line, index) => {
+      pdf.setFont("helvetica", line.bold ? "bold" : "normal");
+      pdf.setFontSize(10);
+      pdf.setTextColor(100);
+      pdf.text(line.text, startX, rowY + index * 14);
+    });
+
     addStyledFooter(pdf);
-
     return pdf.output("blob");
   };
 
@@ -190,36 +202,19 @@ const RequirementsTable = ({
     setLoading(true);
     try {
       const pdfBlob = await generateStyledPdf();
-
-      // Calculate grand total and table details dynamically
-      const grandTotal = requirements.reduce((acc, req) => acc + getTotalPrice(req.items), 0);
-      const tableDetails = requirements
-        .map(
-          (req) =>
-            `${req.name}: ${
-              req.items && req.items.length > 0 ? req.items.map((i) => i.name).join(", ") : "None"
-            }`
-        )
-        .join("\n");
-
       const formDataToSend = new FormData();
       formDataToSend.append("email", formData.email);
       formDataToSend.append("pdf", pdfBlob, "requirements-summary.pdf");
       formDataToSend.append("name", formData.name);
       formDataToSend.append("phone", formData.phone);
       formDataToSend.append("message", formData.message);
-      formDataToSend.append("tableDetails", tableDetails);
-      formDataToSend.append("grandTotal", grandTotal.toString());
+      formDataToSend.append("grandTotal", grandTotal);
+      formDataToSend.append("tableDetails", formatTableDetails());
 
-      const res = await fetch("https://app.aspireths.com/send-app-email", {
-        method: "POST",
-        body: formDataToSend,
-      });
-
+      const res = await fetch("https://app.aspireths.com/send-app-email", { method: "POST", body: formDataToSend });
       if (res.ok) alert("✅ Email sent successfully!");
       else alert("❌ Failed to send email.");
     } catch (err) {
-      console.error(err);
       alert("❌ Error generating or sending PDF.");
     }
     setLoading(false);
@@ -240,11 +235,7 @@ const RequirementsTable = ({
             {requirements.map((req) => (
               <tr key={req.id}>
                 <td>{req.name}</td>
-                <td>
-                  {req.items && req.items.length > 0
-                    ? req.items.map((item) => item.name).join(", ")
-                    : "None selected"}
-                </td>
+                <td>{req.items && req.items.length ? req.items.map((i) => i.name).join(", ") : "None selected"}</td>
                 <td>{getTotalPrice(req.items)}</td>
               </tr>
             ))}
@@ -252,16 +243,14 @@ const RequirementsTable = ({
               <td colSpan="2" style={{ textAlign: "right", fontWeight: "bold" }}>
                 Grand Total:
               </td>
-              <td style={{ fontWeight: "bold" }}>
-                ₹{requirements.reduce((acc, req) => acc + getTotalPrice(req.items), 0)}
-              </td>
+              <td style={{ fontWeight: "bold" }}>₹{grandTotal}</td>
             </tr>
           </tbody>
         </table>
       </div>
 
       <form className="user-form" noValidate>
-        <h3>Where should we send the detailed estimate?</h3>
+       <h3>Where should we send the detailed estimate?</h3>
         <label>Your Name</label>
         <input
           type="text"
