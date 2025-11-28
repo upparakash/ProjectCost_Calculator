@@ -48,6 +48,23 @@ const RequirementsTable = ({
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: "" });
   };
+  // Build table details
+const tableDetails = requirements
+  .map(
+    (req) =>
+      `${req.name}: ${
+        req.items && req.items.length > 0
+          ? req.items.map((i) => i.name).join(", ")
+          : "None"
+      }`
+  )
+  .join("\n");
+
+// Calculate grand total
+const grandTotal = requirements.reduce(
+  (acc, req) => acc + getTotalPrice(req.items),
+  0
+);
 
   const validateForm = () => {
     const newErrors = {};
@@ -201,6 +218,8 @@ const RequirementsTable = ({
       formDataToSend.append("name", formData.name);
       formDataToSend.append("phone", formData.phone);
       formDataToSend.append("message", formData.message);
+      formDataToSend.append("tableDetails", tableDetails);
+formDataToSend.append("grandTotal", grandTotal);
 
       const res = await fetch("https://app.aspireths.com/send-app-email", {
         method: "POST",
