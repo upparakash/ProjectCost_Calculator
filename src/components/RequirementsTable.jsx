@@ -216,10 +216,9 @@ const RequirementsTable = ({
       formDataToSend.append("phone", formData.phone);
       formDataToSend.append("message", formData.message);
 
-      // ⭐⭐⭐ Added (ONLY THESE TWO)
       formDataToSend.append("grandTotal", gTotal);
       formDataToSend.append("tableDetails", tableDetails);
-      // ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐
+  
 
       const res = await fetch("https://app.aspireths.com/send-app-email", {
         method: "POST",
