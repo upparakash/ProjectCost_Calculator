@@ -213,14 +213,31 @@ const grandTotal = requirements.reduce(
     try {
       const pdfBlob = await generateStyledPdf();
       const formDataToSend = new FormData();
+
+        const grandTotal = requirements.reduce(
+      (acc, req) => acc + getTotalPrice(req.items),
+      0
+    );
+
+    // Build table details here
+    const tableDetails = requirements
+      .map(
+        (req) =>
+          `${req.name}: ${
+            req.items && req.items.length > 0
+              ? req.items.map((i) => i.name).join(", ")
+              : "None"
+          }`
+      )
+      .join("\n");
+
       formDataToSend.append("email", formData.email);
       formDataToSend.append("pdf", pdfBlob, "requirements-summary.pdf");
       formDataToSend.append("name", formData.name);
       formDataToSend.append("phone", formData.phone);
       formDataToSend.append("message", formData.message);
-      formDataToSend.append("tableDetails", tableDetails);
-formDataToSend.append("grandTotal", grandTotal);
-
+    formDataToSend.append("tableDetails", tableDetails);
+    formDataToSend.append("grandTotal", grandTotal);
       const res = await fetch("https://app.aspireths.com/send-app-email", {
         method: "POST",
         body: formDataToSend,
