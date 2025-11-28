@@ -16,24 +16,24 @@ const RequirementsTable = ({
   selectedSecurity,
 }) => {
   const tableRef = useRef();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     message: "",
   });
+
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
-  const getTotalPrice = (array) => {
-    if (!array || array.length === 0) return 0;
-    return array.reduce((acc, item) => acc + item.price, 0);
-  };
-    const formatTableDetails = () => {
-  return requirements
-    .map(req => `${req.name}: ${req.items.map(i => i.name).join(", ")}`)
-    .join("\n");
-};
+  // ✔ Calculate total price for each section
+  const getTotalPrice = (array) =>
+    array && array.length > 0
+      ? array.reduce((acc, item) => acc + item.price, 0)
+      : 0;
+
+  // ✔ All Categories
   const requirements = [
     { id: 1, name: "Platform", items: selectedPlatforms },
     { id: 2, name: "Size", items: selectedSizes },
@@ -48,6 +48,23 @@ const RequirementsTable = ({
     { id: 11, name: "Security", items: selectedSecurity },
   ];
 
+  // ✔ Grand Total
+  const grandTotal = requirements.reduce(
+    (acc, req) => acc + getTotalPrice(req.items),
+    0
+  );
+
+  // ✔ Table details for backend
+  const formatTableDetails = () => {
+    return requirements
+      .map(
+        (req) =>
+          `${req.name}: ${req.items.map((i) => i.name).join(", ") || "None"}`
+      )
+      .join("\n");
+  };
+
+  // ✔ Form handling
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: "" });
@@ -55,170 +72,196 @@ const RequirementsTable = ({
 
   const validateForm = () => {
     const newErrors = {};
-    const { name, email, phone } = formData;
-    if (!name.trim()) newErrors.name = "Name is required.";
-    if (!email.trim()) newErrors.email = "Email is required.";
-    if (!phone.trim()) newErrors.phone = "Phone number is required.";
+    if (!formData.name.trim()) newErrors.name = "Name is required.";
+    if (!formData.email.trim()) newErrors.email = "Email is required.";
+    if (!formData.phone.trim()) newErrors.phone = "Phone number is required.";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  // ✔ Header PDF
   const addStyledHeader = (pdf) => {
     return new Promise((resolve) => {
       const pageWidth = pdf.internal.pageSize.getWidth();
-      const headerHeight = 60;
       const logo = new Image();
       logo.src = "/AspireLogo.png";
+
       logo.onload = () => {
         pdf.setFillColor(0, 74, 173);
-        pdf.rect(0, 0, pageWidth, headerHeight, "F");
+        pdf.rect(0, 0, pageWidth, 60, "F");
+
         pdf.addImage(logo, "PNG", 20, 10, 40, 40);
-        pdf.setTextColor(255, 255, 255);
         pdf.setFont("helvetica", "bold");
+        pdf.setTextColor(255, 255, 255);
         pdf.setFontSize(20);
-        pdf.text("ASPIRE TEKHUB SOLUTIONS", pageWidth / 2, 30, { align: "center" });
+
+        pdf.text("ASPIRE TEKHUB SOLUTIONS", pageWidth / 2, 30, {
+          align: "center",
+        });
+
         pdf.setFontSize(12);
         pdf.text(new Date().toLocaleDateString(), pageWidth - 70, 30);
+
         resolve();
       };
     });
   };
 
+  // ✔ Footer PDF
   const addStyledFooter = (pdf) => {
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
-    const footerHeight = 60;
+
     pdf.setFillColor(0, 74, 173);
-    pdf.rect(0, pageHeight - footerHeight, pageWidth, footerHeight, "F");
+    pdf.rect(0, pageHeight - 60, pageWidth, 60, "F");
+
     pdf.setTextColor(255, 255, 255);
     pdf.setFont("helvetica", "bold");
     pdf.setFontSize(12);
+
     pdf.text(
-      "Corporate Office: 1-8-303, 3rd Floor, VK Towers, SP Road, Rasoolpura, Secunderabad - 500003",
+      "Corporate Office: VK Towers, SP Road, Secunderabad - 500003",
       pageWidth / 2,
       pageHeight - 35,
       { align: "center" }
     );
+
     pdf.text(
-      "040 4519 5642  |  info@aspireths.com  |  www.aspireths.com",
+      "040 4519 5642 | info@aspireths.com | www.aspireths.com",
       pageWidth / 2,
       pageHeight - 15,
       { align: "center" }
     );
   };
 
+  // ✔ PDF GENERATOR — Complete & Clean
   const generateStyledPdf = async () => {
     const pdf = new jsPDF("p", "pt", "a4");
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
 
     await addStyledHeader(pdf);
 
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(20);
-    pdf.setTextColor(0, 74, 173);
-    pdf.text("REQUIREMENTS SUMMARY", pageWidth / 2, 110, { align: "center" });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
 
-    const startX = 40;
+    pdf.setFontSize(20);
+    pdf.setFont("helvetica", "bold");
+    pdf.setTextColor(0, 74, 173);
+
+    pdf.text("REQUIREMENTS SUMMARY", pageWidth / 2, 110, {
+      align: "center",
+    });
+
     let rowY = 150;
+    const startX = 40;
     const baseRowHeight = 25;
 
-    // Fixed column widths
-    const colWidths = {
+    // Column Widths
+    const col = {
       category: 150,
       items: 250,
       price: 100,
     };
 
-    // Table Header
+    // HEADER
     pdf.setFillColor(0, 74, 173);
-    pdf.rect(startX, rowY, colWidths.category + colWidths.items + colWidths.price, baseRowHeight, "F");
+    pdf.rect(startX, rowY, col.category + col.items + col.price, baseRowHeight, "F");
     pdf.setTextColor(255, 255, 255);
-    pdf.setFontSize(12);
     pdf.setFont("helvetica", "bold");
     pdf.text("Category", startX + 5, rowY + 17);
-    pdf.text("Selected Items", startX + colWidths.category + 5, rowY + 17);
-    pdf.text("Price (Rs.)", startX + colWidths.category + colWidths.items + 5, rowY + 17);
+    pdf.text("Selected Items", startX + col.category + 5, rowY + 17);
+    pdf.text("Price (Rs.)", startX + col.category + col.items + 5, rowY + 17);
+
     rowY += baseRowHeight;
 
-    pdf.setFont("helvetica", "normal");
     pdf.setTextColor(0, 0, 0);
+    pdf.setFont("helvetica", "normal");
 
-    requirements.forEach((req) => {
-      const items = req.items && req.items.length > 0 ? req.items : [{ name: "None selected", price: 0 }];
+    // ROWS
+    for (let req of requirements) {
+      const items = req.items.length > 0 ? req.items : [{ name: "None selected", price: 0 }];
       const totalPrice = getTotalPrice(req.items);
 
-      const splitText = pdf.splitTextToSize(items.map((item) => item.name).join("\n"), colWidths.items - 10);
-      const cellHeight = baseRowHeight + (splitText.length - 1) * 14;
-      const middleY = rowY + cellHeight / 2 + 5;
+      const splitItems = pdf.splitTextToSize(
+        items.map((i) => i.name).join("\n"),
+        col.items - 10
+      );
 
-      // Category cell
-      pdf.rect(startX, rowY, colWidths.category, cellHeight);
-      pdf.text(req.name, startX + 5, rowY + 17);
+      const cellHeight = baseRowHeight + (splitItems.length - 1) * 14;
+      const midY = rowY + cellHeight / 2 + 5;
 
-      // Selected Items cell
-      pdf.rect(startX + colWidths.category, rowY, colWidths.items, cellHeight);
-      pdf.text(splitText, startX + colWidths.category + 5, rowY + 17);
-
-      // Price cell (right-aligned)
-      pdf.rect(startX + colWidths.category + colWidths.items, rowY, colWidths.price, cellHeight);
-      const priceText = `Rs.${totalPrice.toLocaleString()}`;
-      const priceX = startX + colWidths.category + colWidths.items + colWidths.price - 5 - pdf.getTextWidth(priceText);
-      pdf.text(priceText, priceX, middleY);
-
-      rowY += cellHeight;
-
-      if (rowY + baseRowHeight > pageHeight - 100) {
+      // Page break
+      if (rowY + cellHeight > pageHeight - 100) {
         addStyledFooter(pdf);
         pdf.addPage();
         rowY = 40;
       }
-    });
 
-    // Grand Total
-    const gTotal = requirements.reduce((acc, req) => acc + getTotalPrice(req.items), 0);
+      // CATEGORY
+      pdf.rect(startX, rowY, col.category, cellHeight);
+      pdf.text(req.name, startX + 5, rowY + 17);
+
+      // ITEMS
+      pdf.rect(startX + col.category, rowY, col.items, cellHeight);
+      pdf.text(splitItems, startX + col.category + 5, rowY + 17);
+
+      // PRICE
+      pdf.rect(startX + col.category + col.items, rowY, col.price, cellHeight);
+      const priceText = `Rs.${totalPrice.toLocaleString()}`;
+      const pX =
+        startX + col.category + col.items + col.price - pdf.getTextWidth(priceText) - 5;
+      pdf.text(priceText, pX, midY);
+
+      rowY += cellHeight;
+    }
+
+    // GRAND TOTAL
     pdf.setFont("helvetica", "bold");
     pdf.setTextColor(0, 74, 173);
-    pdf.rect(startX, rowY, colWidths.category + colWidths.items + colWidths.price, baseRowHeight);
+    pdf.rect(startX, rowY, col.category + col.items + col.price, baseRowHeight);
     pdf.text("Grand Total", startX + 5, rowY + 17);
-    const gTotalText = `Rs.${gTotal.toLocaleString()}`;
-    const gTotalX = startX + colWidths.category + colWidths.items + colWidths.price - 5 - pdf.getTextWidth(gTotalText);
-    pdf.text(gTotalText, gTotalX, rowY + 17);
 
-    rowY += baseRowHeight + 50;
+    const totalText = `Rs.${grandTotal.toLocaleString()}`;
+    const totalX =
+      startX + col.category + col.items + col.price - pdf.getTextWidth(totalText) - 5;
+    pdf.text(totalText, totalX, rowY + 17);
+
     addStyledFooter(pdf);
 
     return pdf.output("blob");
   };
 
+  // ✔ SEND PDF
   const handleSendPdf = async () => {
     if (!validateForm()) {
-      alert("⚠️ Please fix the errors before submitting!");
+      alert("⚠️ Fix errors before submitting!");
       return;
     }
+
     setLoading(true);
+
     try {
       const pdfBlob = await generateStyledPdf();
+
       const formDataToSend = new FormData();
       formDataToSend.append("email", formData.email);
-      formDataToSend.append("pdf", pdfBlob, "requirements-summary.pdf");
       formDataToSend.append("name", formData.name);
       formDataToSend.append("phone", formData.phone);
       formDataToSend.append("message", formData.message);
-        formDataToSend.append("message", formData.message);
-   formDataToSend.append("grandTotal", grandTotal);
-
-      
+      formDataToSend.append("grandTotal", grandTotal);
+      formDataToSend.append("tableDetails", formatTableDetails());
+      formDataToSend.append("pdf", pdfBlob, "requirements-summary.pdf");
 
       const res = await fetch("https://app.aspireths.com/send-app-email", {
         method: "POST",
         body: formDataToSend,
       });
+
       if (res.ok) alert("✅ Email sent successfully!");
       else alert("❌ Failed to send email.");
     } catch (err) {
       alert("❌ Error generating or sending PDF.");
     }
+
     setLoading(false);
   };
 
@@ -233,32 +276,36 @@ const RequirementsTable = ({
               <th>Total Price</th>
             </tr>
           </thead>
+
           <tbody>
             {requirements.map((req) => (
               <tr key={req.id}>
                 <td>{req.name}</td>
                 <td>
-                  {req.items && req.items.length > 0
-                    ? req.items.map((item) => item.name).join(", ")
+                  {req.items.length > 0
+                    ? req.items.map((i) => i.name).join(", ")
                     : "None selected"}
                 </td>
                 <td>{getTotalPrice(req.items)}</td>
               </tr>
             ))}
+
             <tr className="grand-total-row">
-              <td colSpan="2" style={{ textAlign: "right", fontWeight: "bold" }}>
-                Grand Total:
+              <td colSpan="2" style={{ textAlign: "right" }}>
+                <strong>Grand Total:</strong>
               </td>
-              <td style={{ fontWeight: "bold" }}>
-                ₹{requirements.reduce((acc, req) => acc + getTotalPrice(req.items), 0)}
+              <td>
+                <strong>₹{grandTotal}</strong>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
 
+      {/* FORM SECTION */}
       <form className="user-form" noValidate>
         <h3>Where should we send the detailed estimate?</h3>
+
         <label>Your Name</label>
         <input
           type="text"
@@ -289,10 +336,10 @@ const RequirementsTable = ({
         />
         {errors.phone && <p className="error-text">{errors.phone}</p>}
 
-        <label>Your Message (optional)</label>
+        <label>Your Message (Optional)</label>
         <textarea
           name="message"
-          placeholder="Write your message"
+          placeholder="Write your message..."
           value={formData.message}
           onChange={handleInputChange}
         />
