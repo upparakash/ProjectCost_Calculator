@@ -119,12 +119,14 @@ const RequirementsTable = ({
     let rowY = 150;
     const baseRowHeight = 25;
 
+    // Fixed column widths
     const colWidths = {
       category: 150,
       items: 250,
       price: 100,
     };
 
+    // Table Header
     pdf.setFillColor(0, 74, 173);
     pdf.rect(startX, rowY, colWidths.category + colWidths.items + colWidths.price, baseRowHeight, "F");
     pdf.setTextColor(255, 255, 255);
@@ -146,12 +148,15 @@ const RequirementsTable = ({
       const cellHeight = baseRowHeight + (splitText.length - 1) * 14;
       const middleY = rowY + cellHeight / 2 + 5;
 
+      // Category cell
       pdf.rect(startX, rowY, colWidths.category, cellHeight);
       pdf.text(req.name, startX + 5, rowY + 17);
 
+      // Selected Items cell
       pdf.rect(startX + colWidths.category, rowY, colWidths.items, cellHeight);
       pdf.text(splitText, startX + colWidths.category + 5, rowY + 17);
 
+      // Price cell (right-aligned)
       pdf.rect(startX + colWidths.category + colWidths.items, rowY, colWidths.price, cellHeight);
       const priceText = `Rs.${totalPrice.toLocaleString()}`;
       const priceX = startX + colWidths.category + colWidths.items + colWidths.price - 5 - pdf.getTextWidth(priceText);
@@ -166,14 +171,14 @@ const RequirementsTable = ({
       }
     });
 
+    // Grand Total
     const gTotal = requirements.reduce((acc, req) => acc + getTotalPrice(req.items), 0);
     pdf.setFont("helvetica", "bold");
     pdf.setTextColor(0, 74, 173);
     pdf.rect(startX, rowY, colWidths.category + colWidths.items + colWidths.price, baseRowHeight);
     pdf.text("Grand Total", startX + 5, rowY + 17);
     const gTotalText = `Rs.${gTotal.toLocaleString()}`;
-    const gTotalX =
-      startX + colWidths.category + colWidths.items + colWidths.price - 5 - pdf.getTextWidth(gTotalText);
+    const gTotalX = startX + colWidths.category + colWidths.items + colWidths.price - 5 - pdf.getTextWidth(gTotalText);
     pdf.text(gTotalText, gTotalX, rowY + 17);
 
     rowY += baseRowHeight + 50;
@@ -190,25 +195,6 @@ const RequirementsTable = ({
     setLoading(true);
     try {
       const pdfBlob = await generateStyledPdf();
-
-      // ⭐ Build tableDetails string
-      const tableDetails = requirements
-        .map(
-          (req) =>
-            `${req.name}: ${
-              req.items && req.items.length > 0
-                ? req.items.map((i) => i.name).join(", ")
-                : "None"
-            }`
-        )
-        .join("\n");
-
-      // ⭐ Calculate total again
-      const gTotal = requirements.reduce(
-        (acc, req) => acc + getTotalPrice(req.items),
-        0
-      );
-
       const formDataToSend = new FormData();
       formDataToSend.append("email", formData.email);
       formDataToSend.append("pdf", pdfBlob, "requirements-summary.pdf");
@@ -216,18 +202,12 @@ const RequirementsTable = ({
       formDataToSend.append("phone", formData.phone);
       formDataToSend.append("message", formData.message);
 
-      formDataToSend.append("grandTotal", gTotal);
-      formDataToSend.append("tableDetails", tableDetails);
-  
-
       const res = await fetch("https://app.aspireths.com/send-app-email", {
         method: "POST",
         body: formDataToSend,
       });
-
       if (res.ok) alert("✅ Email sent successfully!");
       else alert("❌ Failed to send email.");
-
     } catch (err) {
       alert("❌ Error generating or sending PDF.");
     }
@@ -271,7 +251,6 @@ const RequirementsTable = ({
 
       <form className="user-form" noValidate>
         <h3>Where should we send the detailed estimate?</h3>
-
         <label>Your Name</label>
         <input
           type="text"
