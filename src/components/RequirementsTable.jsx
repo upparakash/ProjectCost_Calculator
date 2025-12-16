@@ -204,7 +204,7 @@ const RequirementsTable = ({
       const pdfBlob = await generateStyledPdf();
       const formDataToSend = new FormData();
       formDataToSend.append("email", formData.email);
-      formDataToSend.append("pdf", pdfBlob, "requirements-summary.pdf");
+      formDataToSend.append("file", pdfBlob, "requirements-summary.pdf");
       formDataToSend.append("name", formData.name);
       formDataToSend.append("phone", formData.phone);
       formDataToSend.append("message", formData.message);
